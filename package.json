@@ -1,0 +1,30 @@
+{
+  "name": "stats",
+  "version": "0.0.0",
+  "author": "sentientwaffle",
+  "description": "meta metrics package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "private": true,
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "stylus": "~0.27.1",
+    "nib": "~0.5.0",
+    "llquantize": "~0.0.5",
+    "st": "~0.1.2",
+    "browserify": "~2.29.1",
+    "lodash": "~2.1.0",
+    "d3": "~3.3.6",
+    "routes": "~0.2.0",
+    "uglify-js": "~2.4.8",
+    "metrics": "~0.1.6",
+    "pg": "~2.10.0",
+    "lb_pool": "git@github.com:Voxer/lb_pool.git"
+  },
+  "devDependencies": {
+    "tap": "~0.4.4"
+  }
+}

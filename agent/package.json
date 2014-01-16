@@ -1,0 +1,24 @@
+{
+  "name": "metrics-agent",
+  "version": "0.0.0",
+  "author": "sentientwaffle",
+  "description": "send metrics to metrics-daemon",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "tap $(find test -name '*.test.js' | sort)"
+  },
+  "repository": "",
+  "keywords": [
+    "metrics"
+  ],
+  "private": true,
+  "dependencies": {
+    "lb_pool": "~1.0.0"
+  },
+  "devDependencies": {
+    "tap": "~0.4.6"
+  }
+}

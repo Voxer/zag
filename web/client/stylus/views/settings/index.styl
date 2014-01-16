@@ -1,0 +1,55 @@
+@import "nib"
+@import "../../mixins"
+
+///
+/// Setting buttons
+///
+// A single setting button.
+.setting
+  border-color header-border
+  border-style solid
+  color #333
+  cursor pointer
+  display inline-block
+  float left
+  font-size 13px
+  height 100%
+  padding 7px 17px 8px
+  text-align center
+  user-select none
+  // A button who's popover is visible.
+  &.current
+    background header-bg
+    box-shadow 0px 1px 0px header-bg
+
+///
+/// Toggle sidebar
+///
+.setting-togglesidebar
+  color #666
+  font-size 11px
+  padding 9px 0px
+  width header-height + 2px
+
+///
+/// Popovers
+///
+.setting-popup, .setting-menu
+  position absolute
+  top (header-height + 1px)
+  z-index 4
+
+.setting-popup
+  background header-bg
+  box-shadow header-shadow
+  padding 6px 16px
+
+.setting-menu
+  margin-right -1px
+  min-width 134px
+
+@import "./range-picker-popup"
+@import "./delta-picker-popup"
+@import "./plot-type-popup"
+@import "./main-menu-popup"
+@import "./function-popup"

@@ -1,0 +1,40 @@
+@import "nib"
+@import "../mixins"
+
+wizard-shadow     = rgba(black, 0.4)
+wizard-shadow-rad = 4px
+wizard-tri-yes    = 12px solid wizard-shadow
+wizard-tri-no     = 5px solid transparent
+wizard-tri-offset = wizard-shadow-rad + 1px
+
+// DIV
+.wizard
+  background white
+  border 1px solid #888
+  border-radius 4px
+  box-shadow 0px 0px 0px wizard-shadow-rad wizard-shadow
+  padding 6px
+  position absolute
+  &::after
+    content ' '
+    height 0px
+    position absolute
+    width 0px
+
+// Triangle
+.wizard-bottom::after
+  border-top wizard-tri-yes
+  border-left wizard-tri-no
+  border-right wizard-tri-no
+  top 100%
+  left 50%
+  // The +1px is for the border, probably.
+  transform translate(-50%, wizard-tri-offset)
+
+.wizard-left::after
+  border-right wizard-tri-yes
+  border-top wizard-tri-no
+  border-bottom wizard-tri-no
+  right 100%
+  top 50%
+  transform translate(-1 * wizard-tri-offset, -50%)

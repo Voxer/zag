@@ -1,0 +1,72 @@
+@import "nib"
+@import "../../mixins"
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Many
+////////////////////////////////////////////////////////////////////////////////
+
+.setting-label
+  display inline-block
+  color #222
+  min-width 66px
+.setting-select
+  min-width 100px
+
+////////////////////////////////////////////////////////////////////////////////
+/// Histogram
+////////////////////////////////////////////////////////////////////////////////
+
+.plottype-histogram-popup
+  padding 0px
+
+// Checkbox list
+.setting-check
+  box-sizing border-box
+  color #222
+  cursor pointer
+  display block
+  padding 2px 0px 4px 10px
+  position relative
+  user-select none
+  width 125px
+  &.only
+    font-weight bold
+  &:hover
+    box-shadow inset 2px 0px 0px 1px rgba(black, 0.1)
+    > .setting-check-only
+      display block
+
+.setting-check-reset
+  color #666
+  padding-left 29px
+
+
+// A block of color, corresponding to the plot color.
+// The color itself is an inline style.
+.setting-check-color
+  absolute top 0px left 0px
+  background header-bg
+  bottom 0px
+  width 4px
+
+// The actual input[type=checkbox] control.
+.setting-check-box
+  margin-right 6px
+  position relative
+  top 2px
+
+// A left-arrow to deselect all except for this one.
+.setting-check-only
+  absolute top 0px bottom 0px
+  background transparent
+  border none
+  display none
+  color #555
+  padding 0px 7px
+  right 0px
+  &:hover
+    background transparent
+    color #111
+  &:active
+    box-shadow none

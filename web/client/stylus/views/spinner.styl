@@ -1,0 +1,52 @@
+@import "nib"
+@import "../mixins"
+
+////////////////////////////////////////////////////////////////////////////////
+// Loading "spinner"
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// The loader consists of a series of 4 vertical bars that grow and shrink.
+/// All of the bars start from different height offsets.
+///
+
+loader-min = 15%
+
+// Animate the bars.
+@keyframes loader
+  0%
+    height loader-min
+  50%
+    height 100%
+  90%
+    height loader-min
+  100%
+    height loader-min
+
+// Loader container.
+// `height` and `width` must be set elsewhere.
+.loader
+  absolute top 50% left 50%
+  opacity 0.6
+  pointer-events none
+  transform translate(-50%, -50%) rotate(180deg)
+
+// A single bar. There are 4 total.
+.loader-bar
+  animation loader linear 1.25s infinite
+  background #444
+  height loader-min
+  float left
+  margin 0px 2.5%
+  width 20%
+
+// Per-bar offsets.
+// Use negative delays so that the bars don't all start at 0.
+.lb1
+  animation-delay -1500ms
+.lb2
+  animation-delay -1000ms
+.lb3
+  animation-delay -500ms
+.lb4
+  animation-delay 0ms

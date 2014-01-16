@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>[M]</title>
+    <link rel="stylesheet" href="/public/index.css"/>
+    <link rel="icon" type="image/x-icon" href="/public/favicon.ico"/>
+    <script src="/public/bundle.min.js"></script>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="stats-filter">
+        <input class="stats-filter-input" type="text" placeholder="filter metrics"/>
+      </div>
+      <div class="tree"></div>
+    </aside>
+    <div class="container container-has-sidebar">
+      <header class="stats-header">
+        <div class="settings-left">
+          <span class="setting setting-togglesidebar" title="Toggle sidebar"></span>
+          <span class="setting setting-range"></span>
+          <span class="setting setting-delta"></span>
+        </div>
+        <div class="settings-right">
+          <span class="setting setting-functions" style="display:none;">functions</span>
+          <span class="setting setting-plottype"></span>
+          <span class="setting setting-dashboards">dashboards</span>
+          <span class="setting setting-mainmenu">&equiv;</span>
+        </div>
+      </header>
+      <div class="graph-group"></div>
+    </div>
+  </body>
+</html>

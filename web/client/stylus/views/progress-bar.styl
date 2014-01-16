@@ -1,0 +1,17 @@
+@import "nib"
+@import "../mixins"
+
+///
+/// Progress bar
+///
+
+.progress-bar
+  absolute top 0px left 0px
+  background selected-color
+  height 3px
+  opacity 1.0
+  transition width 200ms ease, opacity 300ms linear
+  width 0%
+  &.hidden
+    opacity 0.0
+    transition opacity 300ms linear

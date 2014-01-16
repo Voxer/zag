@@ -1,0 +1,208 @@
+@import "nib"
+@import "./mixins"
+
+@import "./base"
+@import "./chart"
+
+@import "./views/menu-tree"
+@import "./views/tree"
+@import "./views/dialog"
+@import "./views/wizard"
+@import "./views/input-hint"
+@import "./views/tag-dialog"
+@import "./views/keybindings-dialog"
+@import "./views/link-dialog"
+@import "./views/dashboard-dialog"
+@import "./views/dashboard-save-bar"
+@import "./views/dashboard-chart-dialog"
+@import "./views/chart-header"
+@import "./views/input-suggester"
+
+@import "./views/time-picker"
+@import "./views/progress-bar"
+@import "./views/spinner"
+
+@import "./views/settings/index"
+
+////////////////////////////////////////////////////////////////////////////////
+// Layout
+////////////////////////////////////////////////////////////////////////////////
+
+.button-create, .button-delete, .button-cancel
+  border none
+  border-radius 3px
+  color white
+  padding 6px
+
+.button-create
+  background create-color
+  &:hover
+    background darken(create-color, 10%)
+  &.disabled
+    background lighten(create-color, 50%)
+    cursor default
+    &:active
+      box-shadow none
+
+.button-delete
+  background delete-color
+  &:hover
+    background #c00
+
+.button-cancel
+  background #999
+  &:hover
+    background #888
+
+////////////////////////////////////////
+// Sidebar
+////////////////////////////////////////
+
+// List of metrics keys
+.sidebar
+  absolute top 0px bottom 0px
+  border-right 1px solid header-border
+  left 0px
+  overflow auto
+  width sidebar-width
+  // The tree container and the list in the left sidebar
+  > .tree
+    absolute top header-height bottom 0px
+    left 0px
+    right 0px
+
+
+.container
+  absolute top 0px left 0px
+  bottom 0px
+  right 0px
+.container-has-sidebar
+  left (sidebar-width + 1px)
+.container-has-function > .graph-group
+  bottom (function-form-height + 1px)
+
+////////////////////////////////////////
+// Header
+////////////////////////////////////////
+
+.stats-filter, .stats-header
+  background header-bg
+  border-bottom 1px solid header-border
+  height header-height
+
+// Filter the metrics key tree.
+.stats-filter
+  fixed top 0px left 0px
+  right 0px
+  width sidebar-width
+  z-index 2
+// Filter box
+filter-margin = 2px
+input.stats-filter-input
+  absolute top filter-margin left filter-margin
+  bottom filter-margin
+  font-size 12px
+  right filter-margin
+
+// Settings bar.
+.stats-header
+  absolute top 0px left 0px
+  right 0px
+
+////////////////////////////////////////
+// Settings
+////////////////////////////////////////
+
+///
+/// Settings groups
+///
+
+.settings-left, .settings-right
+  position absolute
+  top 0px
+  // Keep the popups over the plot outlines.
+  z-index 5
+  > .setting
+    border-width 0px
+
+// Settings on the left: interval, delta
+.settings-left
+  left 0px
+  > .setting
+    border-right-width 1px
+// Settings on the right: type, tags, etc.
+.settings-right
+  right 0px
+  > .setting
+    border-left-width 1px
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Content
+////////////////////////////////////////////////////////////////////////////////
+
+.graph-group
+  absolute top (header-height + 1px) left 0px
+  background white
+  bottom 0px
+  overflow-x hidden
+  // dashboards can scroll
+  overflow-y auto
+  padding-top 4px
+  right 0px
+  scrollbars()
+
+///
+/// Graphs
+///
+.chart-full, .chart-half, .chart-dashboard
+  position relative
+
+// Graph containers
+.chart-full, .chart-half
+  overflow hidden
+  width 100%
+
+// ONE, MANY
+.chart-full
+  height 100%
+// HISTOGRAM
+.chart-half
+  height 50%
+// DASHBOARD
+.chart-dashboard
+  height 100px
+  float left
+  width 300px
+
+// Some instructions on how to create a new dashboard.
+.dashboard-wizard
+  left sidebar-width + 10px
+  top 50%
+  transform translateY(-50%)
+
+
+
+// DIV
+// A clickable target positioned over a chart to select it.
+// It lets you pick between a histogram and counter split when adding
+// a chart to a dashboard.
+.chart-target
+  absolute top 5px left 10px
+  background rgba(black, 0.05)
+  border 1px solid #ccc
+  bottom 0px
+  cursor pointer
+  right 10px
+  &:hover
+    background rgba(create-color, 0.1)
+    > .chart-target-label
+      background darken(create-color, 10%)
+
+// SPAN
+// The actual target text.
+.chart-target-label
+  absolute left 50% top 50%
+  display inline-block
+  padding 6px 10px
+  transform translate(-50%, -50%)

@@ -1,0 +1,135 @@
+@import "nib"
+
+////////////////////////////////////////////////////////////////////////////////
+// Labels
+////////////////////////////////////////////////////////////////////////////////
+
+hover-border-color = #ccc
+.hover-track-x
+  background black
+  opacity 0.15
+  width 1px
+.hover-label
+  background white
+  border 1px solid hover-border-color
+  color black
+  padding 4px 8px
+  opacity 0.7
+  user-select none
+  white-space nowrap
+.hover-date-label, .hover-tag-label
+  font-size 12px
+  z-index 1
+.hover-date-label
+  text-align center
+  // fixed width to avoid reflow when innerText changes
+  //width 132px
+.hover-value-label
+  font-size 10px
+  margin 0px 10px
+  transform translateY(-50%)
+  z-index 2
+.hover-circle
+  background white
+  border 2px solid black
+  border-radius 4px
+  height 4px
+  transform translate(-50%, -50%)
+  width 4px
+.hover-mark-rect
+  background transparent
+  border-radius 0px
+  border-width 1px
+  box-shadow 0px 0px 0px 1px white
+.hover-track-x, .hover-label, .hover-circle
+  // overflow:hidden to create a layout boundary, maybe
+  overflow hidden
+  // Prevent any label elements from intercepting events.
+  pointer-events none
+  position absolute
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Drag Zoom
+////////////////////////////////////////////////////////////////////////////////
+
+.zoom-region
+  background rgba(#08f, 0.2)
+  position absolute
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Axis
+////////////////////////////////////////////////////////////////////////////////
+
+axis-bg    = #333
+tick-long  = 5px
+tick-short = 1px
+.axis-x, .axis-y
+  absolute top 0px left 0px
+  overflow hidden
+
+.axis-line
+  absolute top 0px right 0px
+  background axis-bg
+  height 2px
+  width 2px
+
+.axis-x-tick, .axis-y-tick
+  position absolute
+  white-space nowrap
+
+.axis-x-tick
+  height 16px
+  overflow hidden
+  transform translateX(-50%)
+  text-align center
+  width 50px
+
+.axis-x-tick-text, .axis-y-tick-text
+  color axis-bg
+  display inline-block
+  font-size 10px
+  position absolute
+
+.axis-x-tick-text
+  transform translateX(-50%)
+.axis-y-tick-text
+  transform translate(-100%, -50%)
+
+////////////////////////////////////////////////////////////////////////////////
+// Tags
+////////////////////////////////////////////////////////////////////////////////
+
+tag-max-height = 26px
+tag-width      = 2px
+
+.tag-container
+  absolute top 0px left 0px
+  height tag-max-height
+  overflow hidden
+  right 0px
+
+// A single tag marker.
+.tag-line
+  height 7px
+  position absolute
+  top 0px
+  width tag-width
+  // Extra radius that triggers the mouseover event.
+  &::before
+    content ' '
+    height tag-max-height
+    position absolute
+    transform translateX(-50%)
+    width 12px
+
+.tag-current
+  absolute top 0px left 0px
+  width tag-width
+
+.tag-current-label
+  color #444
+  opacity 1.0
+  transform translateX(-50%)
+  white-space nowrap

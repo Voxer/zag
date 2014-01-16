@@ -1,0 +1,37 @@
+@import "nib"
+@import "../mixins"
+
+///
+/// Hotkeys
+///
+
+key-width = 46px
+key-pad   = 6px
+
+.hotkey-group
+  float left
+  width 204px
+
+.hotkey-category
+  color #444
+  font-size 15px
+  font-weight bold
+  margin 10px 0px 4px (key-width + key-pad)
+  user-select none
+
+.hotkey-pairs
+  list-style none
+
+.hotkey-pair
+  margin-bottom 2px
+
+.hotkey-key
+  display inline-block
+  font-weight bold
+  padding-right key-pad
+  text-align right
+  width key-width
+
+.hotkey-action
+  color #666
+  font-size 12px

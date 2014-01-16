@@ -1,0 +1,38 @@
+@import "nib"
+@import "../mixins"
+
+///
+/// Time picker
+///
+
+time-picker-background = white
+time-picker-border     = #ddd
+
+// Container
+.time-picker
+  background time-picker-background
+  border 1px solid time-picker-border
+  color #888
+  float left
+  padding 2px 6px
+  &.readonly
+    border-color transparent
+    > .time-input:focus
+      border-color transparent
+
+// A sub-field
+input.time-input
+  background transparent
+  border 1px solid transparent
+  color #222
+  font-size 11px
+  padding 0px
+  width 1.1em
+  &:focus
+    border-color #ccc
+
+input.time-year
+  width 2.3em
+
+input.time-hour
+  margin-left 6px

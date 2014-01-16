@@ -1,0 +1,70 @@
+@import "nib"
+@import "../../mixins"
+
+///
+/// Date links
+///
+
+// Table of date offset links.
+.date-links
+  font-size 14px
+
+.date-link-unit
+  color #444
+  font-size 12px
+  font-weight bold
+  padding-right 6px
+
+.date-link-tr:hover > .date-link-unit
+  color black
+.date-link-td
+  text-align right
+
+.date-link
+  display inline-block
+  padding 3px 8px
+  &:hover, &.current
+    background white
+    box-shadow inset 0px 0px 0px 1px rgba(black, 0.1)
+    font-weight bold
+
+
+.range-hr
+  border none
+  border-top 1px solid #ddd
+  margin 6px 0px
+  visibility visible
+
+range-picker-font = 10px
+// "Begin:" or "End:"
+.range-picker-label
+  clear left
+  display inline-block
+  float left
+  font-size range-picker-font
+  margin 5px 0px
+  width 44px
+  user-select none
+
+// A button to set the end time to "now"
+.range-picker-now
+  background time-picker-background
+  border 1px solid time-picker-border
+  box-shadow none
+  color anchor-color
+  float right
+  font-size range-picker-font
+  margin-right 4px
+  margin-top -1px
+  padding 2px 6px
+  &:hover
+    background time-picker-background
+    text-decoration underline
+  &:active
+    box-shadow none
+  &.disabled
+    background transparent
+    color #999
+    cursor default
+    &:hover
+      text-decoration none

@@ -1,0 +1,46 @@
+@import "nib"
+@import "../../mixins"
+
+.function-popup
+  padding 6px
+
+// UL
+.function-list
+  border-top 1px solid input-border
+  list-style none
+
+// LI
+.function-list-item
+  border 1px solid input-border
+  position relative
+
+// INPUT
+input.function-list-input
+  border none
+  font-family monospace
+  font-size 11px
+  margin-top -1px
+  padding-right 45px
+  width 600px
+  &:focus
+    // Crazy border & margins to prevent overlapping borders
+    border 1px solid selected-color
+    margin -1px
+    margin-top -2px
+
+// BUTTON
+// Unplot a function.
+.function-list-remove
+  absolute right 4px top 50%
+  background transparent
+  border none
+  border-radius 4px
+  color #888
+  font-size 11px
+  padding 2px 4px
+  transform translateY(-50%)
+  &:hover
+    background delete-color
+    color white
+  &:active
+    box-shadow none

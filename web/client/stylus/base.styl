@@ -1,0 +1,65 @@
+@import "nib"
+@import "./mixins"
+
+////////////////////////////////////////////////////////////////////////////////
+// Element styles
+////////////////////////////////////////////////////////////////////////////////
+
+*
+  margin 0px
+  padding 0px
+
+body
+  font-family sans-serif
+  font-size 12px
+
+input[type="text"]
+  border 1px solid input-border
+  font-size 14px
+  padding 6px 3px
+  &.error
+    box-shadow inset 0px 0px 4px darken(red, 20%)
+
+select
+  background white
+  border 1px solid #ddd
+  color #222
+  margin 6px 0px
+  padding 1px 3px
+
+input[type="text"], select
+  &:focus
+    border-color selected-color
+    outline none
+
+input[type="checkbox"]
+  &:focus
+    outline none
+
+button, input[type="submit"], a.button
+  background linear-gradient(top, #eee, #ddd)
+  border 1px solid #ccc
+  color #222
+  cursor pointer
+  display inline-block
+  padding 4px 16px
+  text-decoration none
+  user-select none
+  &:hover
+    background #e8e8e8
+    text-decoration none
+  &:active
+    box-shadow inset 0px 1px 2px rgba(black, 0.3)
+  &:focus
+    outline none
+
+a
+  color anchor-color
+  text-decoration none
+  &:hover
+    text-decoration underline
+
+hr
+  clear both
+  visibility hidden
+  width 100%

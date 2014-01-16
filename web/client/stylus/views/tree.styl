@@ -1,0 +1,86 @@
+@import "nib"
+@import "../mixins"
+
+leaf-height = 16px
+
+leaf-background(bg)
+  absolute left 0px right 0px
+  background bg
+  content ' '
+  height leaf-height
+  z-index -1
+
+// Tree container.
+.tree
+  overflow hidden
+  scrollbars()
+  &:hover
+    overflow-y auto
+
+// Subtrees: groups of leaf children
+.tree-sub
+  list-style-type none
+  padding-left 20px
+
+// Leaf container.
+.tree-leaf, .tree-parent
+  cursor default
+  user-select none
+
+.tree-parent
+  color #555
+  padding 3px 0px
+  white-space nowrap
+  &::before
+    leaf-background(#f4f4f4)
+    border-bottom 1px solid #eee
+    border-top 1px solid #eee
+    margin-top -1px
+
+// The row.
+.tree-leaf-inner
+  padding 1px 0px
+
+// The triangle arrow.
+.tree-expander
+  display inline-block
+  cursor pointer
+  font-size 10px
+  height leaf-height
+  line-height (leaf-height - 3px)
+  position absolute
+  text-align center
+  transform translateX(-100%)
+  width 20px
+
+// SPAN
+// The leaf text.
+.tree-leaf-label
+  white-space nowrap
+
+// Cursor, on 1 leaf per tree at any given moment.
+cursor-color  = #777
+cursor-shrink = 2px
+cursor-border = leaf-height / 2 - cursor-shrink
+.tree-leaf-cursor
+  // Left-triangle
+  &::after
+    border-top cursor-border solid transparent
+    border-bottom cursor-border solid transparent
+    border-right 10px solid cursor-color
+    content ' '
+    height 0px
+    margin-top cursor-shrink
+    position absolute
+    right 0px
+    width 0px
+
+// A selected leaf. There may be more than 1.
+.tree-leaf-current
+  > .tree-expander, > .tree-leaf-label
+    color white
+  // Blue background for selected nodes.
+  &::before
+    leaf-background(selected-color)
+  &::after
+    border-right-color white
