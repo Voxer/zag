@@ -10,7 +10,6 @@ var http          = require('http')
   , EventEmitter  = require('events').EventEmitter
   , makeAgent     = require('../../agent')
   , MetricsRouter = require('./routes')
-  , publicDir     = path.join(__dirname, "../public")
   , clientDir     = path.join(__dirname, "../client")
   , stylusDir     = path.join(clientDir, "stylus")
   , jsDir         = path.join(clientDir, "js")
@@ -25,13 +24,15 @@ module.exports = MetricsWeb
 ///   daemons     - ["address:port"]
 ///   defaultPath - String "/graph/some_metrics_key" or "/dashboards/some_dashboard"
 ///   backend     - PGBackend
+///   public      - String, a readable/writable directory path.
 ///
 /// Events:
 ///   error(err)
 ///   ready() - The server is online.
 ///
 function MetricsWeb(options) {
-  var _this = this
+  var _this     = this
+    , publicDir = options.public = path.resolve(options.public)
 
   this.agent   = makeAgent(options.daemons)
   this.agent.on("error", this.onError.bind(this))
@@ -43,14 +44,21 @@ function MetricsWeb(options) {
     , agent:   this.metrics.scope("postgres")
     , onError: this.onError.bind(this)
     })
-  this.router = new MetricsRouter(this.db, this.metrics, options.defaultPath || "/graph/metrics-daemon>keys")
+  this.router = new MetricsRouter(
+    { db:          this.db
+    , agent:       this.metrics
+    , defaultPath: options.defaultPath || "/graph/metrics-daemon>keys"
+    , public:      options.public
+    })
   this.server = http.createServer(function(req, res) { _this.onRequest(req, res) })
+
+  try { fs.mkdirSync(publicDir) } catch(e) {}
 
   // Generate assets.
   buildCSS(path.join(stylusDir, "index.styl"), function(err, css) {
     if (err) return callback(err)
     fs.writeFile(path.join(publicDir, "index.css"), css)
-    buildJS(options.env === "prod", function() {
+    buildJS(publicDir, options.env === "prod", function() {
       var addrport = options.host.split(":")
       _this.server.listen(+addrport[1], addrport[0], _this.onReady.bind(_this))
     })
@@ -103,7 +111,7 @@ function buildCSS(file, callback) {
   })
 }
 
-function buildJS(minify, callback) {
+function buildJS(publicDir, minify, callback) {
   var bundle    = path.join(publicDir, "bundle.js")
     , bundleMin = path.join(publicDir, "bundle.min.js")
     , sourceMap = path.join(publicDir, "bundle.js.map")

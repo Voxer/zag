@@ -4,7 +4,7 @@ Metrics-Web serves the graphing frontend.
 
 # Setup
 
-Start the server:
+Start the server: (the public directory needs to be readable/writable).
 
     require('metrics-web')(
     { host:        "address:port"
@@ -13,6 +13,7 @@ Start the server:
     , daemons:    ["address:port", ...]
     , defaultPath: "/graph/your_favorite_metric"
     , backend:     require('metrics-backend-pg')
+    , public:      "/tmp/metrics-public"
     }).on("error", function(err) {
       // An error occurred.
     }).on("ready", function() {

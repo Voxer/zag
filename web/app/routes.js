@@ -10,11 +10,14 @@ var zlib             = require('zlib')
   , MetricsChannels  = require('./models/channel')
   , MetricsLoader    = require('./metrics')
 
-var st = require('st')(
-  { path:        __dirname + "/../public"
-  , url:        "public/"
-  , passthrough: false
-  })
+
+function makeST(public, pass) {
+  return require('st')(
+    { path:        public
+    , passthrough: pass
+    , url:        "public/"
+    })
+}
 
 var appHTML = fs.readFileSync(__dirname + "/../public/index.html")
 
@@ -22,19 +25,21 @@ module.exports = MetricsRouter
 
 function minToMS(n) { return n * 60000 }
 
-/// db          - Backend
-/// agent       - MetricsAgent
-/// defaultPath - String "/url/path"
-function MetricsRouter(db, agent, defaultPath) {
-  this.db          = db
-  this.agent       = agent
-  this.defaultPath = defaultPath
+/// options -
+///   db          - Backend
+///   agent       - MetricsAgent
+///   defaultPath - String "/url/path"
+///   public      - String path
+function MetricsRouter(options) {
+  this.db          = options.db
+  this.agent       = options.agent
+  this.defaultPath = options.defaultPath
   this.router      = new Router()
-  this.dashboards  = new DashboardManager(db)
-  this.tagtypes    = new TagTypeManager(db)
-  this.mkeys       = new DBKeyTree(db)
-  this.monitor     = new Monitor(agent.pool)
-  this.channels    = new MetricsChannels(agent.pool)
+  this.dashboards  = new DashboardManager(this.db)
+  this.tagtypes    = new TagTypeManager(this.db)
+  this.mkeys       = new DBKeyTree(this.db)
+  this.monitor     = new Monitor(this.agent.pool)
+  this.channels    = new MetricsChannels(this.agent.pool)
   this.metrics     = new MetricsLoader
     ( this.readPoints.bind(this)
     , this.writePoints.bind(this)
@@ -83,7 +88,11 @@ function MetricsRouter(db, agent, defaultPath) {
     }))
 
   /// Static
-  router.addRoute("/public/*?", st)
+  var generated = makeST(options.public, true)
+    , static    = makeST(__dirname + "/../public", false)
+  router.addRoute("/public/*?", function(req, res) {
+    generated(req, res, function() { static(req, res) })
+  })
   router.addRoute("*", function(req, res) {
     res.statusCode = 404
     res.end()
