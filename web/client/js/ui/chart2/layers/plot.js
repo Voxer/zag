@@ -10,10 +10,6 @@ function Plot(chart, options) {
   this.points  = null
 }
 
-// TODO move to utils/
-Plot.transform = "-webkit-transform"
-Plot.translate = function(dx, dy) { return "translate(" + dx + "px," + dy + "px)" }
-
 Plot.prototype.isPlot = true
 
 // Default: circle

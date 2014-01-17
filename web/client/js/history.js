@@ -14,7 +14,11 @@ Router.toQueryString = sail.toQueryString
 //
 function History(router) {
   this.router = router.on("title", this.setDocumentTitle.bind(this))
-  window.addEventListener("popstate", router.onPopState.bind(router))
+  // Listening for the initial popstate event doesn't work in firefox.
+  setTimeout(function() {
+    router.onPopState()
+    window.addEventListener("popstate", router.onPopState.bind(router))
+  }, 0)
 }
 
 // Set the `<title>`.

@@ -1,8 +1,7 @@
 var dateToString = require('../../../../../lib/date-utils').dateToString
-  , Plot         = require('./plot')
   , PointSet     = require('../models/point-set/point-set')
-  , transform    = Plot.transform
-  , translate    = Plot.translate
+  , translate    = require('../utils/translate')
+  , transform    = translate.transform
 
 module.exports = TagLayer
 

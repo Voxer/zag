@@ -102,8 +102,8 @@ HoverLabel.prototype.updateNow = function() {
   if (this.isVisible === HIDE) return
 
   var ev       = this.animEv
-    , x        = ev.offsetX
-    , y        = ev.offsetY
+    , x        = ev.offsetX || ev.layerX
+    , y        = ev.offsetY || ev.layerY
     , chart    = this.chart
     , xPoint   = chart.findX(x)
     , offsetX  = xPoint && xPoint.x

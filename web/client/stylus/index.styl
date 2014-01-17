@@ -88,21 +88,24 @@
 .stats-filter, .stats-header
   background header-bg
   border-bottom 1px solid header-border
-  height header-height
+  box-sizing border-box
+  // +1px because of the border-box
+  height header-height + 1px
 
 // Filter the metrics key tree.
 .stats-filter
   fixed top 0px left 0px
   right 0px
+  padding 2px
   width sidebar-width
   z-index 2
 // Filter box
 filter-margin = 2px
 input.stats-filter-input
-  absolute top filter-margin left filter-margin
-  bottom filter-margin
+  box-sizing border-box
+  height 100%
   font-size 12px
-  right filter-margin
+  width 100%
 
 // Settings bar.
 .stats-header

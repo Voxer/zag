@@ -1,9 +1,8 @@
-var Plot       = require('./plot')
-  , inherits   = require('util').inherits
+var inherits   = require('util').inherits
   , formatTime = require('../utils/format-time')
   , formatSI   = require('../utils/format-si')
-  , transform  = Plot.transform
-  , translate  = Plot.translate
+  , translate  = require('../utils/translate')
+  , transform  = translate.transform
   , TICK_LONG  = 5
   , TICK_SHORT = 1
   , AXIS_BG    = "#333"
