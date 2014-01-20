@@ -23,6 +23,7 @@ Start the server:
 
 # Features
 
+  * There is an API CLI in `web/bin/admin.js`.
   * Press `?` for keyboard shortcuts.
   * Graphs
     * To zoom a graph, click and drag vertically or horizontally.

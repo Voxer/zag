@@ -5,12 +5,12 @@ var reDup    = /^duplicate key value/
 
 var setup =
   [ "CREATE TABLE $env_metrics_keys ("
-  + "  metrics_key varchar(255) NOT NULL CONSTRAINT $env_key_idx UNIQUE,"
+  + "  metrics_key varchar(512) NOT NULL CONSTRAINT $env_key_idx UNIQUE,"
   + "  type varchar(255) NOT NULL,"
   + "  create_time timestamp NOT NULL default NOW()"
   + ")"
   , "CREATE TABLE $env_metrics_data ("
-  + "  metrics_key varchar(255) NOT NULL,"
+  + "  metrics_key varchar(512) NOT NULL,"
   + "  time_start bigint NOT NULL,"
   + "  data json NOT NULL"
   + ")"
