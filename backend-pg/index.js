@@ -118,7 +118,9 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
     var rows   = res.rows
       , points = new Array(rows.length)
     for (var i = 0; i < rows.length; i++) {
-      points[i] = rows[i].data
+      var row = rows[i]
+      points[i]    = row.data
+      points[i].ts = +row.time_start
     }
     callback(null, points)
   })
