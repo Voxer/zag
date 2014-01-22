@@ -58,7 +58,9 @@ function keyBindingsToHTML() {
     , html = ""
 
   for (var i = 0, l = cats.length; i < l; i++) {
-    if (i > 0 && i % 3 === 0) html += '<hr/>'
+    if (i > 0 && i % 3 === 0) {
+      html += '<hr class="hotkey-hr"/>'
+    }
     var cat = cats[i]
     html += '<div class="hotkey-group">'
           +   '<h3 class="hotkey-category">' + cat + '</h3>'
