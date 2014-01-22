@@ -321,7 +321,7 @@ PostgresBackend.prototype.onConnectionError = function(err) {
 ///
 
 PostgresBackend.prototype._get = function(table, id, callback) {
-  this.query("SELECT data FROM " + table + " WHERE id=$1 LIMIT 1", [id], pluckFirstData(callback))
+  this.query("SELECT data FROM " + table + " WHERE id=$1 LIMIT 1", [id], pluckFirstData(id, callback))
 }
 
 // Upsert
@@ -342,9 +342,11 @@ function getID(row) { return row.id }
 
 function getData(row) { return row.data }
 
-function pluckFirstData(callback) {
+function pluckFirstData(id, callback) {
   return function(err, res) {
     var rows = res && res.rows
-    callback(err, rows && rows[0] && rows[0].data)
+      , val  = rows && rows[0] && rows[0].data
+    if (val) val.id = id
+    callback(err, val)
   }
 }
