@@ -4,7 +4,7 @@ module.exports = Dashboard
 ///
 /// opts -
 ///   * id     - String unique dashboard name
-///   * graphs - {String graph id : {name, keys, renderer, subkey, histkeys}}
+///   * graphs - {String graph id : {title, keys, renderer, subkey, histkeys}}
 /// tree - DashboardTree
 ///
 function Dashboard(opts, tree) {

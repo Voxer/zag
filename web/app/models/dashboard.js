@@ -29,6 +29,7 @@ DashboardManager.prototype.set = function(id, val, callback) {
   if (this.cache && this.cache.indexOf(id) === -1) {
     this.cache.push(id)
   }
+  val.id = id
   this.db.setDashboard(id, val, callback)
 }
 

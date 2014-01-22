@@ -17,7 +17,7 @@ var LAYOUT_ONE       = ChartSet.LAYOUT_ONE       = 1 // a single counter
 ///
 /// This is the definitive state of what is currently graphed.
 ///
-/// makeChart({keys, histkeys, subkey, renderer}) -> Chart
+/// makeChart({keys, histkeys, subkey, renderer, id}) -> Chart
 /// getType(mkey, callback(fail, type))
 ///   * mkey - String
 ///   * fail - true or null
@@ -248,7 +248,10 @@ ChartSet.prototype.graphDashboard = function(dashboard) {
   var graphs   = dashboard.graphs
     , graphIDs = Object.keys(graphs)
   for (var i = 0; i < graphIDs.length; i++) {
-    this.addChart(graphs[graphIDs[i]])
+    var id    = graphIDs[i]
+      , graph = graphs[id]
+    graph.id  = id
+    this.addChart(graph)
   }
 }
 

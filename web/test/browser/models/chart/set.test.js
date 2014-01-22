@@ -240,8 +240,8 @@ test("ChartSet#graphDashboard", function(t) {
     t.end()
 
     function makeChart(opts) {
-      if      (i === 0) t.deepEquals(opts, {keys: ["a", "b"], renderer: "line"})
-      else if (i === 1) t.deepEquals(opts, {keys: ["c", "d"], subkey: "median", title: "TITLE"})
+      if      (i === 0) t.deepEquals(opts, {keys: ["a", "b"], renderer: "line", id: "1"})
+      else if (i === 1) t.deepEquals(opts, {keys: ["c", "d"], subkey: "median", title: "TITLE", id: "2"})
       else t.fail()
       return {chart: i++}
     }

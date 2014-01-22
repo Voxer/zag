@@ -4,11 +4,10 @@ var test             = require('tap').test
 test("DashboardManager#set", function(t) {
   var db   = new MockDB()
     , dm   = new DashboardManager(db)
-    , dash = {id: "foo"}
   dm.cache = []
-  dm.set("foo", dash, function() {
+  dm.set("foo", {}, function() {
     t.deepEquals(dm.cache, ["foo"])
-    t.deepEquals(db.ops, [["setDashboard", "foo", dash]])
+    t.deepEquals(db.ops, [["setDashboard", "foo", {id: "foo"}]])
     t.end()
   })
 })
