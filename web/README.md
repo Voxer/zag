@@ -35,4 +35,5 @@ Start the server:
   * Tags
     * To create a tag manually, right-click a graph's X axis.
     * To edit an existing tag, left-click it's tick mark on the X axis.
+    * Use the `admin.js` script to create and manage tag categories.
 
