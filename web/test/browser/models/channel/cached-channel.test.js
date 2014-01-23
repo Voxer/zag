@@ -72,3 +72,20 @@ test("CachedChannel 'point'", function(t) {
     done = true
   }
 })
+
+test("CachedChannel#updateKeys", function(t) {
+  var pt      = {ts: 1, key: "a", count: 5}
+    , channel = new CachedChannel(new MockAPI(), 1000, onPoint)
+
+  channel.updateKeys(["a"], [])
+  channel.es.emit("point", {data: JSON.stringify(pt)})
+  t.deepEquals(channel._cache, {a: [pt]})
+  t.deepEquals(channel.keys, ["a"])
+
+  channel.updateKeys([], ["a"])
+  t.deepEquals(channel._cache, {})
+  t.deepEquals(channel.keys, [])
+  t.end()
+
+  function onPoint(point) { }
+})

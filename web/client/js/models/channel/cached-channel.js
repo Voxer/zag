@@ -43,6 +43,11 @@ CachedChannel.prototype.onLivePoint = function(point) {
 // Returns Integer
 CachedChannel.prototype.getMaxTime = function() { return this._max }
 
+CachedChannel.prototype._remove = function(mkey) {
+  delete this._cache[mkey]
+  Channel.prototype._remove.call(this, mkey)
+}
+
 // Pull the flat data from a LLQ point. Leave other points untouched.
 //
 // pt - {ts, key, ...}
