@@ -137,7 +137,7 @@ PostgresBackend.prototype.savePoints = function(points) {
     ( "INSERT INTO " + this.tKeys + " "
     + "SELECT $1,$2 "
     + "WHERE NOT EXISTS "
-    + "( SELECT 1 FROM " this.tKeys + " "
+    + "( SELECT 1 FROM " + this.tKeys + " "
     +   "WHERE metrics_key=$1 )",
     [mkey, type], this._onKeyInsert)
     this.savePoint(mkey, pt)
