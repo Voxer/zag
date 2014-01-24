@@ -129,18 +129,32 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
 // points - { mkey : point }
 PostgresBackend.prototype.savePoints = function(points) {
   var mkeys = Object.keys(points)
-  for (var i = 0; i < mkeys.length; i++) {
-    var mkey = mkeys[i]
-      , pt   = points[mkey]
-      , type = identify(pt)
-    this.query
-    ( "INSERT INTO " + this.tKeys + " "
-    + "SELECT $1,$2 "
-    + "WHERE NOT EXISTS "
-    + "( SELECT 1 FROM " + this.tKeys + " "
-    +   "WHERE metrics_key=$3 )",
-    [mkey, type, mkey], this._onKeyInsert)
-    this.savePoint(mkey, pt)
+    , tKeys = this.tKeys
+    , total = mkeys.length * 2
+    , _this = this
+
+  this.query("BEGIN", [], function(err) {
+    if (err) return _this.onError(err)
+    for (var i = 0; i < mkeys.length; i++) {
+      var mkey = mkeys[i]
+        , pt   = points[mkey]
+        , type = identify(pt)
+      _this.query
+      ( "INSERT INTO " + tKeys + " "
+      + "SELECT $1,$2 "
+      + "WHERE NOT EXISTS "
+      + "( SELECT 1 FROM " + tKeys + " "
+      +   "WHERE metrics_key=$3 )",
+      [mkey, type, mkey], done)
+      _this.savePoint(mkey, pt, done)
+    }
+  })
+
+  function done(err) {
+    _this._onKeyInsert(err)
+    if (--total === 0) {
+      _this.query("COMMIT", [], _this._onPointInsert)
+    }
   }
 }
 
@@ -151,7 +165,7 @@ function identify(pt) {
 }
 
 PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
-  this.query("INSERT INTO " + this.tData + " VALUES($1, $2, $3)", [mkey, pt.ts, JSON.stringify(pt)], this._onPointInsert)
+  this.query("INSERT INTO " + this.tData + " VALUES($1, $2, $3)", [mkey, pt.ts, JSON.stringify(pt)], callback || this._onPointInsert)
 }
 
 PostgresBackend.prototype.onKeyInsert = function(err) {
@@ -292,7 +306,8 @@ PostgresBackend.prototype.listDashboards = function(callback) {
 PostgresBackend.prototype.query = function(sql, params, callback) {
   var agent = this.agent
     , start = Date.now()
-    , cmd   = sql.slice(0, sql.indexOf(" "))
+    , index = sql.indexOf(" ")
+    , cmd   = index === -1 ? sql : sql.slice(0, index)
     , table = this.reTable.exec(sql)
 
   table = table ? table[1] : "unknown"
