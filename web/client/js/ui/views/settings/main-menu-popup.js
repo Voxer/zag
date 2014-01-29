@@ -2,6 +2,8 @@ var LinkDialog        = require('../link-dialog')
   , KeyBindingsDialog = require('../keybindings-dialog')
   , Menu              = require('../menu')
   , inherits          = require('util').inherits
+  , openNewTab        = require('../../utils/new-tab')
+  , HELP              = "https://github.com/Voxer/metrics"
 
 module.exports = MainMenu
 
@@ -27,7 +29,7 @@ function MainMenu(opts) {
         }
       , null
       , { label: "Key Bindings", onClick: "onClickKeyBindings" }
-      , { label: "Help",         onClick: "onClickHelp" }
+      , { label: "Help",         onClick: "onClickHelp", href: HELP }
       ]
     })
   this.el.className += " setting-menu"
@@ -58,6 +60,4 @@ MainMenu.prototype.onClickFunctions = function() {
 
 MainMenu.prototype.onClickKeyBindings = function() { KeyBindingsDialog.toggle() }
 
-MainMenu.prototype.onClickHelp = function() {
-  console.log("TODO 'Help'")
-}
+MainMenu.prototype.onClickHelp = function() { openNewTab(HELP) }
