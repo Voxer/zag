@@ -66,7 +66,7 @@ function MetricsDaemon(options) {
   this.mm.on("warn",  this.onMonitorWarnings.bind(this))
 
   this.ma = new MetricsAggregator(function(points) {
-    _this.mm.test(points)
+    //_this.mm.test(points)
     _this.ms.savePoints(points)
     _this.metrics.histogram("keys", Object.keys(points).length)
     _this.metrics.histogram("live_keys", _this.ma.deltas.size())
