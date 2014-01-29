@@ -130,31 +130,19 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
 PostgresBackend.prototype.savePoints = function(points) {
   var mkeys = Object.keys(points)
     , tKeys = this.tKeys
-    , total = mkeys.length * 2
-    , _this = this
 
-  this.query("BEGIN", [], function(err) {
-    if (err) return _this.onError(err)
-    for (var i = 0; i < mkeys.length; i++) {
-      var mkey = mkeys[i]
-        , pt   = points[mkey]
-        , type = identify(pt)
-      _this.query
-      ( "INSERT INTO " + tKeys + " "
-      + "SELECT $1,$2 "
-      + "WHERE NOT EXISTS "
-      + "( SELECT 1 FROM " + tKeys + " "
-      +   "WHERE metrics_key=$3 )",
-      [mkey, type, mkey], done)
-      _this.savePoint(mkey, pt, done)
-    }
-  })
-
-  function done(err) {
-    _this._onKeyInsert(err)
-    if (--total === 0) {
-      _this.query("COMMIT", [], _this._onPointInsert)
-    }
+  for (var i = 0; i < mkeys.length; i++) {
+    var mkey = mkeys[i]
+      , pt   = points[mkey]
+      , type = identify(pt)
+    this.query
+    ( "INSERT INTO " + tKeys + " "
+    + "SELECT $1,$2 "
+    + "WHERE NOT EXISTS "
+    + "( SELECT 1 FROM " + tKeys + " "
+    +   "WHERE metrics_key=$3 )",
+    [mkey, type, mkey], done)
+    this.savePoint(mkey, pt, this.onKeyInsert)
   }
 }
 
