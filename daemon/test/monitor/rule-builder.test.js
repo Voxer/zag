@@ -11,7 +11,7 @@ test("RuleBuilder", function(t) {
 })
 
 test("RuleBuilder#get valid", function(t) {
-  var db = { rules: {ts: Date.now(), hours: makeHours()} }
+  var db = { rules: {ts: Date.now(), fields: ["mean"], hours: makeHours()} }
     , rb = new RuleBuilder(new RuleDB(db), 1000)
   rb.get("key", function(err, rule) {
     if (err) throw err

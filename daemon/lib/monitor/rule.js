@@ -21,7 +21,7 @@ Rule.interval = msWeek
 // Returns Boolean
 Rule.prototype.isExpired = function() {
   return (Date.now() - this.ts > msWeek)
-      || !this.hours[getHour()]
+      || (!!this.fields.length && !this.hours[getHour()])
 }
 
 function getHour() { return (new Date).getHours() }

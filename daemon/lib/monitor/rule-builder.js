@@ -37,13 +37,19 @@ RuleBuilder.prototype.build = function(mkey, callback) {
     if (err) return callback(err)
     // Eventually it would be great to monitor sparse data, but for now
     // the alerts aren't sufficiently reliable.
-    if (points.length < 1440) return callback()
-    var rule = pointsToRule(now, points)
+    // This saves an empty rule. When it expires, an actual one will be generated.
+    var rule = points.length < 1440
+             ? emptyRule(now)
+             : pointsToRule(now, points)
     db.setRule(mkey, rule, function(err) {
       if (err) return callback(err)
       callback(null, new Rule(rule))
     })
   })
+}
+
+function emptyRule(ts) {
+  return new Rule({ts: ts, fields: [], hours: {}})
 }
 
 // ts     - Integer timestamp
