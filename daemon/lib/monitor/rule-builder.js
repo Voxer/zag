@@ -14,7 +14,7 @@ function RuleBuilder(db, wayback) {
   this.db          = db
   this.wayback     = wayback
   this.building    = 0
-  this.maxBuilding = 20
+  this.maxBuilding = 50
 }
 
 // mkey - String metrics key.

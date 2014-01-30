@@ -2,7 +2,7 @@ var EventEmitter = require('events').EventEmitter
   , inherits     = require('util').inherits
   , RuleBuilder  = require('./rule-builder')
   , RuleTester   = require('./rule-tester')
-  , reLLQ        = /@llq$/
+  , reIgnore     = /(@llq$|[|])/
 
 module.exports = MetricsMonitor
 
@@ -32,7 +32,7 @@ MetricsMonitor.prototype.test = function(points) {
     , warnings = []
   for (var i = 0; i < mkeys.length; i++) {
     var mkey = mkeys[i]
-    if (reLLQ.test(mkey)) continue
+    if (reIgnore.test(mkey)) continue
     var tester = this.getTester(mkey)
       , warns  = tester.test(points[mkey])
     for (var j = 0; j < warns.length; j++) { warnings.push(warns[j]) }
