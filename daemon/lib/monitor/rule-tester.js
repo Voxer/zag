@@ -49,8 +49,7 @@ RuleTester.prototype.check = function(field) {
 
   var value  = rpoint.mean
     , target = bounds[field]
-    , margin = Math.max(1,
-                 Math.pow(Math.sqrt(bounds[field + "_var"])), 1.2)
+    , margin = Math.max(1, Math.sqrt(bounds[field + "_var"]))
 
   if (value > target + margin) {
     return new Warning(this.mkey, field, value, target, margin, ">")
