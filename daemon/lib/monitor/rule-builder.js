@@ -11,8 +11,10 @@ module.exports = RuleBuilder
 /// wayback - Integer, milliseconds
 ///
 function RuleBuilder(db, wayback) {
-  this.db      = db
-  this.wayback = wayback
+  this.db          = db
+  this.wayback     = wayback
+  this.building    = 0
+  this.maxBuilding = 20
 }
 
 // mkey - String metrics key.
@@ -30,10 +32,15 @@ RuleBuilder.prototype.get = function(mkey, callback) {
 // mkey - String metrics key.
 // callback(Error, Rule)
 RuleBuilder.prototype.build = function(mkey, callback) {
+  if (this.building >= this.maxBuilding) return process.nextTick(callback)
+
   var now   = Date.now()
     , start = now - msWeek
-    , db    = this.db
-  db.getPoints(mkey, start, now, function(err, points) {
+    , _this = this
+
+  this.building++
+  this.db.getPoints(mkey, start, now, function(err, points) {
+    _this.building--
     if (err) return callback(err)
     // Eventually it would be great to monitor sparse data, but for now
     // the alerts aren't sufficiently reliable.
@@ -41,7 +48,7 @@ RuleBuilder.prototype.build = function(mkey, callback) {
     var rule = points.length < 1440
              ? emptyRule(now)
              : pointsToRule(now, points)
-    db.setRule(mkey, rule, function(err) {
+    _this.db.setRule(mkey, rule, function(err) {
       if (err) return callback(err)
       callback(null, new Rule(rule))
     })
