@@ -93,9 +93,13 @@ function MetricsRouter(options) {
   router.addRoute("/public/*?", function(req, res) {
     generated(req, res, function() { static(req, res) })
   })
-  router.addRoute("*", function(req, res) {
-    res.statusCode = 404
-    res.end()
+
+  // Wait till the next tick to allow for other routes.
+  process.nextTick(function() {
+    router.addRoute("*", function(req, res) {
+      res.statusCode = 404
+      res.end()
+    })
   })
 }
 
