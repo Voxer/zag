@@ -85,8 +85,10 @@ function pointsToRule(ts, points) {
     for (var h = 0; h < hourList.length; h++) {
       var hour   = hourList[h]
         , bounds = hours[hour] || (hours[hour] = {})
-      bounds[field]          = rPoints[hour].getMean()
-      bounds[field + "_var"] = rPoints[hour].getVariance()
+        , hist   = rPoints[hour].toJSON()
+        , mean   = rPoints[hour].getMean()
+      bounds[field]          = mean
+      bounds[field + "_var"] = hist.p95 - mean
     }
   }
 

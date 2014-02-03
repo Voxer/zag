@@ -22,8 +22,8 @@ test("RuleTester", function(t) {
     var hours = {}
       , hour  = (new Date).getHours()
     hours[hour] =
-      { count: 20, count_var: 10*10
-      , mean:  50, mean_var:  5*5
+      { count: 20, count_var: 10
+      , mean:  50, mean_var:  5
       }
 
     var rule   = makeRule({fields: Object.keys(T.point), hours: hours})
