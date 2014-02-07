@@ -113,17 +113,25 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
   + "AND time_start>=$2 "
   + "AND time_start<=$3 "
   + "ORDER BY time_start",
-  [mkey, start, end], function(err, res) {
+  [mkey, toHour(start), toHour(end)], function(err, res) {
     if (err) return callback(err)
     var rows   = res.rows
-      , points = new Array(rows.length)
-    for (var i = 0; i < rows.length; i++) {
-      var row = rows[i]
-      points[i]    = row.data
-      points[i].ts = +row.time_start
+      , points = []
+    for (var i = 0, off = 0; i < rows.length; i++) {
+      appendPoints(points, rows[i].data, start, end)
     }
     callback(null, points)
   })
+}
+
+function appendPoints(allPoints, newPoints, start, end) {
+  for (var i = 0; i < newPoints.length; i++) {
+    var pt = newPoints[i]
+      , ts = pt.ts
+    if (start <= ts && ts <= end) {
+      allPoints.push(pt)
+    }
+  }
 }
 
 // points - { mkey : point }
@@ -152,8 +160,37 @@ function identify(pt) {
        : "counter"
 }
 
+var msHour = 1000 * 60 * 60
+
+function toHour(ms) { return ms - (ms % msHour) }
+
 PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
-  this.query("INSERT INTO " + this.tData + " VALUES($1, $2, $3)", [mkey, pt.ts, JSON.stringify(pt)], callback || this._onPointInsert)
+  var _this = this
+    , chunk = toHour(pt.ts)
+    , done  = callback || this._onPointInsert
+  this.query
+  ( "SELECT data "
+  + "FROM " + this.tData + " "
+  + "WHERE metrics_key=$1 AND time_start=$2 "
+  + "LIMIT 1",
+  [mkey, chunk], function(err, res) {
+    if (err) return done(err)
+    var rows   = res  && res.rows
+      , points = rows && rows[0] && rows[0].data
+    if (points) {
+      points.push(pt)
+      _this.query
+      ( "UPDATE " + _this.tData + " "
+      + "SET data=$1 "
+      + "WHERE metrics_key=$2 AND time_start=$3",
+      [JSON.stringify(points), mkey, chunk], done)
+    } else {
+      _this.query
+      ( "INSERT INTO " + _this.tData + " VALUES($1, $2, $3)",
+      [mkey, chunk, JSON.stringify([pt])], done)
+    }
+  })
+  //this.query("INSERT INTO " + this.tData + " VALUES($1, $2, $3)", [mkey, pt.ts, JSON.stringify(pt)], callback || this._onPointInsert)
 }
 
 PostgresBackend.prototype.onKeyInsert = function(err) {
