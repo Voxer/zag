@@ -125,12 +125,14 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
 }
 
 function appendPoints(allPoints, newPoints, start, end) {
+  var last
   for (var i = 0; i < newPoints.length; i++) {
     var pt = newPoints[i]
       , ts = pt.ts
-    if (start <= ts && ts <= end) {
+    if (ts !== last && start <= ts && ts <= end) {
       allPoints.push(pt)
     }
+    last = ts
   }
 }
 
@@ -175,9 +177,13 @@ PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
   + "LIMIT 1",
   [mkey, chunk], function(err, res) {
     if (err) return done(err)
-    var rows   = res  && res.rows
-      , points = rows && rows[0] && rows[0].data
+    var rows   = res    && res.rows
+      , points = rows   && rows[0] && rows[0].data
+      , count  = points && points.length
     if (points) {
+      if (count && points[count - 1].ts === pt.ts) {
+        return
+      }
       points.push(pt)
       _this.query
       ( "UPDATE " + _this.tData + " "
