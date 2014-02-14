@@ -27,8 +27,8 @@ Dialog.prototype.View
 + '</div>' )
 ```
 
-Attach events. When an element matching `.dialog-close` within
-`this.el` is clicked, `this.destroy` will be called.
+Attach events. For example, when an element matching `.dialog-close` within
+`this.el` is clicked, `this.onClick` will be called with the event.
 
 ```javascript
 .on(
