@@ -16,7 +16,7 @@ inherits(Dialog, View)
 
 Define the template. Substitutions are `{field}`, in this case `{title}`
 and `{body}`. The `:title` bit indicates that that element should be attached
-to the Dialog -- it will be available as `this.title`.
+to the Dialog &ndash; it will be available as `this.title`.
 
 ```javascript
 Dialog.prototype.View
