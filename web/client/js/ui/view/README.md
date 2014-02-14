@@ -16,7 +16,8 @@ inherits(Dialog, View)
 
 Define the template. Substitutions are `{field}`, in this case `{title}`
 and `{body}`. The `:title` bit indicates that that element should be attached
-to the Dialog &ndash; it will be available as `this.title`.
+to the Dialog &ndash; it will be available as `this.title` once the
+element is rendered.
 
 ```javascript
 Dialog.prototype.View
@@ -66,7 +67,7 @@ Dialog.prototype.onClick = function(event) {
 }
 
 Dialog.prototype.onDoubleClick = function() {
-  console.log("you've double-clicked on the dialog", ++this.clicks, "times")
+  console.log("you double-clicked on the dialog", ++this.clicks, "times")
 }
 ```
 
@@ -82,7 +83,7 @@ var dialog = new Dialog(
 dialog.el    // div.dialog
 dialog.title // div.dialog-title
 // Removes the element and cleans up, calling the `destroy()` listeners.
-// Alternatively, there is a `remove()` method that only removes the element.
+// Alternatively, there is a `remove()` method that only detaches the element from the DOM.
 dialog.destroy()
 ```
 
