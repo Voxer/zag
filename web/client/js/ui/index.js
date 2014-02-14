@@ -1,5 +1,3 @@
-require('./view').shim(require('./view/lib/shims/dom'))
-
 var ChartCanvas       = require('./chart2')
   , api               = require('../api')
   , ChartSet          = require('../models/chart').Set

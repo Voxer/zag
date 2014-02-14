@@ -1,6 +1,6 @@
 # Setup
 
-  1. Setup a Postgres database.
+  1. Set up a Postgres database.
   2. Run the setup script in [`metrics-backend-pg`][backend].
     This will create the tables and indices.
   3. Setup some [`metrics-daemon`][daemon] processes.

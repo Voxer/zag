@@ -3,11 +3,11 @@
 ///
 module.exports = View
 
-var reTmpl  = /([<]\w+):(\w+)\b/g
+var dom     = require('./lib/shims/dom')
+  , reTmpl  = /([<]\w+):(\w+)\b/g
   , reEvent = /^(?:(\S+)\s+)?(\w+)$/
   , reChar  = /([^\w])/g
   , SCOPE = 0, ID = 0
-  , dom
 
 function View(tmplOpts) {
   tmplOpts    = tmplOpts || {}
