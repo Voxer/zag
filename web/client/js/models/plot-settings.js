@@ -45,12 +45,16 @@ PlotSettings.prototype.getTags = function() { return Tag.all() }
 PlotSettings.prototype.loadTags = function(callback) {
   // No tags for live metrics until I figure out how to make them
   // not refresh constantly.
-  if (this.delta < 60000) {
+  if (this.isLive()) {
     return setTimeout(function() { callback(null, Tag.all()) })
   }
   Tag.load(this.start, this.end, function(fail, tagInterval) {
     callback(fail, tagInterval && tagInterval.data)
   })
+}
+
+PlotSettings.prototype.isLive = function() {
+  return this.delta < 60000
 }
 
 ////////////////////////////////////////////////////////////////////////////////

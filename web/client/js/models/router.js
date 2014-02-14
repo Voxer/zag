@@ -69,9 +69,11 @@ Router.prototype.update = function(mode, data) {
 
 // mode, data - Same as Router#update.
 Router.prototype.permalink = function(mode, data) {
+  var sett   = this.settings
+    , isLive = sett.isLive()
   return this.location.origin + this.toURL(mode, data,
-    { start: this.settings.start
-    , end:   this.settings.end
+    { start: isLive ? sett.startReal : sett.start
+    , end:   isLive ? sett.endReal   : sett.end
     })
 }
 
