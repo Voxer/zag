@@ -110,7 +110,7 @@ RangePicker.prototype.nowDisabled = function() {
 ////////////////////////////////////////////////////////////////////////////////
 
 RangePicker.prototype.onClickLink = function(ev) {
-  if (ev.ctrlKey || ev.button !== 0) return
+  if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button !== 0) return
   ev.preventDefault()
   this.emit("range:real", ev.target.dataset.start, undefined)
   this.update()

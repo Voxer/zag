@@ -23,12 +23,12 @@ Start the server:
 
 # Features
 
-  * There is an API CLI in `web/bin/admin.js`.
   * Press `?` for keyboard shortcuts.
   * Graphs
     * To zoom a graph, click and drag vertically or horizontally.
     * To revert the zoom, double-click the graph.
     * To pan a graph, shift click and drag.
+    * To monitor a live graph, select an interval from the "minutes" row of the range picker.
   * Tree
     * Clicking on a triangle expands/collapses the keys.
     * Shift-clicking on a triangle graphs all of the key's children.
@@ -36,4 +36,5 @@ Start the server:
     * To create a tag manually, right-click a graph's X axis.
     * To edit an existing tag, left-click it's tick mark on the X axis.
     * Use the `admin.js` script to create and manage tag categories.
+  * There is an API CLI in [`web/bin/admin.js`](https://github.com/Voxer/metrics/blob/master/web/bin/admin.js).
 
