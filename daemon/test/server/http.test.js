@@ -10,24 +10,3 @@ test("HTTPServer", function(t) {
   t.equals(hs.ring, ring)
   t.end()
 })
-
-/*
-test("POST /api/metrics", function(t) {
-  var ring = new MockRing()
-    , hs   = new HTTPServer(ring)
-
-  hs.listen(PORT++, HOST, function() {
-    // TODO request, pool
-
-    t.deepEquals(ring.ops,
-      [ [ "metrics"
-        , [ {type: "counter",   key: "foo", value: 5.2}
-          , {type: "histogram", key: "bar", value: 400}
-          ]
-        , false
-        ]
-      ])
-    t.end(); hs.close()
-  })
-})
-*/

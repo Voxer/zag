@@ -39,7 +39,7 @@ function usage() {
   l("")
   l("$METRICS_HOST=" + (host || "?"))
   l("")
-  l("Documentation can be found at TODO")
+  l("Documentation can be found at https://github.com/Voxer/metrics")
   process.exit(1)
 }
 

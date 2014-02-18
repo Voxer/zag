@@ -57,7 +57,7 @@ function MetricsDaemon(options) {
   this.ms = new options.backend(
     { db:      options.db
     , env:     options.env || "dev"
-    , agent:   this.metrics.scope("postgres")
+    , agent:   this.metrics.scope("backend")
     , onError: this.onError.bind(this)
     })
 

@@ -1,6 +1,5 @@
 module.exports = APIClient
 
-/// TODO tests
 /// A metrics HTTP API wrapper.
 ///
 /// ajax -

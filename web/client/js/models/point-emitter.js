@@ -34,7 +34,6 @@ PointEmitter.prototype.removeChart = function(chartID) {
   delete this.charts[chartID]
 }
 
-// TODO: optimization: only call Channel#setKeys, not addKey/removeKey
 // chartID - String
 // updates - {add, remove}
 PointEmitter.prototype.updateKeys = function(chartID, updates) {

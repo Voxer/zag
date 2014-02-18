@@ -19,10 +19,8 @@ var Popups =
 ///   * Display and edit chart interval.
 ///   * Display and edit chart delta.
 ///   * Display and edit chart type/subkeys.
-///   * Manage tags. TODO
 ///   * Display and edit dashboards.
-///   * A menu with additional behavior: TODO
-///     * Export as...
+///   * A menu with additional behavior (e.g. keybindings, help).
 ///
 /// Events: Emitted when the user changes one of these in a popover widget.
 ///   * range(start, end)

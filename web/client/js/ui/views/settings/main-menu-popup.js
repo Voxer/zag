@@ -10,6 +10,9 @@ module.exports = MainMenu
 /// The "main menu" for the application.
 ///
 /// Actions:
+///   * Export as... TODO
+///   * Manage tags TODO
+///   * Functions
 ///   * Permalink
 ///   * Key bindings
 ///   * Help

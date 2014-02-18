@@ -41,7 +41,7 @@ function MetricsWeb(options) {
   this.db = new options.backend(
     { env:     options.env
     , db:      options.db
-    , agent:   this.metrics.scope("postgres")
+    , agent:   this.metrics.scope("backend")
     , onError: this.onError.bind(this)
     })
   this.router = new MetricsRouter(

@@ -141,8 +141,6 @@ Interval.diff = intervalDiff
 // start  - Integer timestamp
 // end    - Integer timestamp
 //
-// TODO find a more efficient way to combine the points arrays
-//
 Interval.prototype.add = function(points, start, end) {
   if (!this.data) {
     this.data  = points

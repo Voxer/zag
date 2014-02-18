@@ -202,10 +202,6 @@ Tree.prototype.currentTree = function() {
   return this.isFiltered ? this.filterTree : this.rootTree
 }
 
-// TODO key deletion
-// leaf - String
-Tree.prototype.remove = function(leaf) { }
-
 // Scroll to the lexically-first selected key.
 Tree.prototype.scrollToFirst = function() {
   var first = this.firstKey()
