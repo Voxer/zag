@@ -152,11 +152,17 @@ Interval.prototype.add = function(points, start, end) {
   var current = this.data
   // Prepend
   if (end <= this.start) {
+    if (pointEquals(current[0], points[points.length - 1])) {
+      points.pop()
+    }
     for (var i = points.length - 1; i >= 0; i--) {
       current.unshift(points[i])
     }
   // Append
   } else {
+    if (pointEquals(current[current.length - 1], points[0])) {
+      points.shift()
+    }
     for (var i = 0; i < points.length; i++) {
       current.push(points[i])
     }
@@ -206,4 +212,8 @@ function intervalDiff(minA, maxA, minB, maxB) {
        : [ [minB, minA]
          , [maxA, maxB]
          ] // Double interval
+}
+
+function pointEquals(pt1, pt2) {
+  return pt1 && pt2 && pt1.ts && pt1.ts === pt2.ts
 }
