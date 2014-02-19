@@ -1,6 +1,5 @@
-var test       = require('tap').test
-  , llquantize = require('llquantize')
-  , HeatMap    = require('../../lib/heat')
+var test    = require('tap').test
+  , HeatMap = require('../../lib/heat')
 
 test("HeatMap", function(t) {
   var pts = []

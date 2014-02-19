@@ -17,7 +17,7 @@
   "private": true,
   "dependencies": {
     "metrics": "~0.1.6",
-    "llquantize": "0.0.5",
+    "llquantize": "0.0.6",
     "routes": "~0.2.0"
   },
   "devDependencies": {
