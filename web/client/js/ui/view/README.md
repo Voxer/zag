@@ -15,7 +15,7 @@ inherits(Dialog, View)
 ```
 
 Define the template. Substitutions are `{field}`, in this case `{title}`
-and `{body}`. The `:title` bit indicates that that element should be attached
+and `{body}`. `:title` indicates that that element should be attached
 to the Dialog &ndash; it will be available as `this.title` once the
 element is rendered.
 
@@ -91,7 +91,10 @@ Views can inherit from one another.
 
 ```javascript
 function LoudDialog(label) {
-  Dialog.call(this, {label: label})
+  Dialog.call(this,
+    { title: "loud dialog title"
+    , label: label
+    })
 }
 
 inherits(LoudDialog, Dialog)
@@ -103,5 +106,5 @@ Fill the `body` field of the Dialog template with a new template.
 LoudDialog.prototype.View({body: '<strong:content>{label}</strong>'})
 
 var loud = new LoudDialog("go away")
-loud.content.outerHTML // "<strong>go away</strong>"
+loud.content.tagName // "STRONG"
 ```
