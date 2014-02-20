@@ -1,6 +1,6 @@
 var Dialog   = require('./dialog')
   , inherits = require('util').inherits
-  , keymap   = require('../utils/keymap')
+  , keymap   = require('browser-keymap')
 
 module.exports = DashboardChartDialog
 

@@ -1,4 +1,4 @@
-var keymap            = require('./utils/keymap')
+var keymap            = require('browser-keymap')
   , Dialog            = require('./views/dialog')
   , KeyBindingsDialog = require('./views/keybindings-dialog')
 

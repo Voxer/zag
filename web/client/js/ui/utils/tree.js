@@ -1,6 +1,6 @@
 var EventEmitter = require('events').EventEmitter
   , inherits     = require('util').inherits
-  , keymap       = require('./keymap')
+  , keymap       = require('browser-keymap')
   , TreeScanner  = require('./scan')
   // Triangle icons
   , COLLAPSED    = "&#9656;"

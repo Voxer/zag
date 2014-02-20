@@ -1,7 +1,7 @@
 var SettingsPopup = require('./settings-popup')
   , inherits      = require('util').inherits
   , UNITS         = require('../../../../../lib/date-utils').UNITS
-  , keymap        = require('../../utils/keymap')
+  , keymap        = require('browser-keymap')
   , reDelta       = /^[0-9]+([smhdwMy]?)$/
 
 var DELTAS =

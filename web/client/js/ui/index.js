@@ -12,7 +12,7 @@ var ChartCanvas       = require('./chart2')
   , SettingsView      = require('./settings')
   , SidebarView       = require('./sidebar')
   , DashboardTreeView = require('./dashboard-tree-view')
-  , openNewTab        = require('./utils/new-tab')
+  , openNewTab        = require('open-new-tab')
   , parseMKey         = require('../../../lib/mkey')
 
 module.exports = Layout

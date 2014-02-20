@@ -3,7 +3,7 @@ var SettingsPopup  = require('./settings-popup')
   , inherits       = require('util').inherits
   , InputSuggester = require('../input-suggester')
   , isFn           = require('../../../../../lib/mkey').isFunction
-  , keymap         = require('../../utils/keymap')
+  , keymap         = require('browser-keymap')
   , tInput         = require('../../utils/text-input')
   , form
 

@@ -2,7 +2,7 @@ var LinkDialog        = require('../link-dialog')
   , KeyBindingsDialog = require('../keybindings-dialog')
   , Menu              = require('../menu')
   , inherits          = require('util').inherits
-  , openNewTab        = require('../../utils/new-tab')
+  , openNewTab        = require('open-new-tab')
   , HELP              = "https://github.com/Voxer/metrics"
 
 module.exports = MainMenu
