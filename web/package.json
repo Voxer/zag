@@ -20,7 +20,8 @@
     "routes": "~0.2.0",
     "uglify-js": "~2.4.8",
     "open-new-tab": "~0.0.1",
-    "browser-keymap": "~0.0.1"
+    "browser-keymap": "~0.0.1",
+    "skyview": "~0.0.0"
   },
   "devDependencies": {
     "tap": "~0.4.4"

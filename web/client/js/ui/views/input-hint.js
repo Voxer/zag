@@ -1,4 +1,4 @@
-var View     = require('../view')
+var SkyView  = require('skyview')
   , inherits = require('util').inherits
 
 module.exports = InputHint
@@ -16,10 +16,10 @@ function InputHint(options) {
   var style = this.inputEl.style
   if (!style.position) style.position = "relative"
 
-  View.call(this, { hint: options.hint })
+  SkyView.call(this, { hint: options.hint })
 }
 
-inherits(InputHint, View)
+inherits(InputHint, SkyView)
 
 InputHint.prototype.View
   ( '<div class="input-hint-trigger">'

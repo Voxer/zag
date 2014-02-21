@@ -32,9 +32,12 @@ Start the server:
   * Tree
     * Clicking on a triangle expands/collapses the keys.
     * Shift-clicking on a triangle graphs all of the key's children.
+    * Shift-click on a leaf to overlay it on the current graph.
   * Tags
+    * Each "tag" has a timestamp, a label, and a category.
+      The category determines the tag color.
+    * Use the `admin.js` script to create and manage tag categories.
     * To create a tag manually, right-click a graph's X axis.
     * To edit an existing tag, left-click it's tick mark on the X axis.
-    * Use the `admin.js` script to create and manage tag categories.
   * There is an API CLI in [`web/bin/admin.js`](https://github.com/Voxer/metrics/blob/master/web/bin/admin.js).
 

@@ -1,4 +1,4 @@
-var SkyView  = require('../view')
+var SkyView  = require('skyview')
   , inherits = require('util').inherits
 
 module.exports = ProgressBar

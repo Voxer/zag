@@ -22,6 +22,7 @@
     "uglify-js": "~2.4.8",
     "open-new-tab": "~0.0.1",
     "browser-keymap": "~0.0.1",
+    "skyview": "~0.0.0",
     "metrics": "~0.1.6",
     "pg": "~2.10.0",
     "lb_pool": "~1.0.0"

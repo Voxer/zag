@@ -1,4 +1,4 @@
-var View     = require('../view')
+var SkyView  = require('skyview')
   , inherits = require('util').inherits
   , Menu     = require('./menu')
 
@@ -14,12 +14,12 @@ function ChartHeader(dashboard, chartView) {
   this.dashboard = dashboard
   this.view      = chartView
   this.chart     = chartView.chart
-  View.call(this,
+  SkyView.call(this,
     { title: sail.escapeHTML(this.chart.getTitle())
     })
 }
 
-inherits(ChartHeader, View)
+inherits(ChartHeader, SkyView)
 
 ChartHeader.prototype.View
   ( '<div class="chart-head">'

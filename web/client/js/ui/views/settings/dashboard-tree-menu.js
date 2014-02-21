@@ -1,4 +1,4 @@
-var SkyView         = require('../../view')
+var SkyView         = require('skyview')
   , inherits        = require('util').inherits
   , DashboardTree   = require('../../../models/dashboard-tree')
   , DashboardDialog = require('../dashboard-dialog')

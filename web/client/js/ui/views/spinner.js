@@ -1,4 +1,4 @@
-var View     = require('../view')
+var SkyView  = require('skyview')
   , inherits = require('util').inherits
 
 module.exports = Spinner
@@ -21,14 +21,14 @@ function Spinner(container, options) {
   for (var i = 1; i < 5; i++) {
     html += '<div class="loader-bar lb' + i + '"></div>'
   }
-  View.call(this,
+  SkyView.call(this,
     { body:   html
     , height: (options && options.height) || 100
     , width:  (options && options.width)  || 80
     })
 }
 
-inherits(Spinner, View)
+inherits(Spinner, SkyView)
 
 Spinner.prototype.View('<div class="loader" style="height:{height}px;width:{width}px;">{body}</div>')
   .destroy(function() { this.container = null })

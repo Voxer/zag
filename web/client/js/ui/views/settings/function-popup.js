@@ -1,5 +1,5 @@
 var SettingsPopup  = require('./settings-popup')
-  , SkyView        = require('../../view')
+  , SkyView        = require('skyview')
   , inherits       = require('util').inherits
   , InputSuggester = require('../input-suggester')
   , isFn           = require('../../../../../lib/mkey').isFunction

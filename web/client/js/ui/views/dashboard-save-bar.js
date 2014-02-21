@@ -1,4 +1,4 @@
-var View     = require('../view')
+var SkyView  = require('skyview')
   , inherits = require('util').inherits
 
 module.exports = DashboardSaveBar
@@ -11,10 +11,10 @@ module.exports = DashboardSaveBar
 ///
 function DashboardSaveBar(dashboardChart) {
   this.dchart = dashboardChart
-  View.call(this, {})
+  SkyView.call(this, {})
 }
 
-inherits(DashboardSaveBar, View)
+inherits(DashboardSaveBar, SkyView)
 
 DashboardSaveBar.prototype.View
   ( '<div class="dashboard-save-bar">'
