@@ -2,7 +2,7 @@ var zlib             = require('zlib')
   , crypto           = require('crypto')
   , fs               = require('fs')
   , Router           = require('routes')
-  , EventSource      = require('../lib/event-source')
+  , EventSource      = require('event-source-emitter')
   , DBKeyTree        = require('./models/mkeys')
   , DashboardManager = require('./models/dashboard')
   , TagTypeManager   = require('./models/tag-type')
@@ -495,7 +495,7 @@ function getChannelMetrics(req, res) {
     res.statusCode = 400
     return res.end()
   }
-  var es       = new EventSource(req, res, {keepAlive: true})
+  var es       = EventSource(req, res, {keepAlive: true})
     , channels = this.channels
   channels.create(channelID, delta, es)
 
