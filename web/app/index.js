@@ -8,7 +8,7 @@ var http          = require('http')
   , uglify        = require('uglify-js')
   , inherits      = require('util').inherits
   , EventEmitter  = require('events').EventEmitter
-  , makeAgent     = require('../../agent')
+  , makeAgent     = require('zag-agent')
   , MetricsRouter = require('./routes')
   , clientDir     = path.join(__dirname, "../client")
   , stylusDir     = path.join(clientDir, "stylus")
@@ -36,7 +36,7 @@ function MetricsWeb(options) {
 
   this.agent   = makeAgent(options.daemons)
   this.agent.on("error", this.onError.bind(this))
-  this.metrics = this.agent.scope("metrics-web")
+  this.metrics = this.agent.scope("zag-web")
 
   this.db = new options.backend(
     { env:     options.env
@@ -47,7 +47,7 @@ function MetricsWeb(options) {
   this.router = new MetricsRouter(
     { db:          this.db
     , agent:       this.metrics
-    , defaultPath: options.defaultPath || "/graph/metrics-daemon>keys"
+    , defaultPath: options.defaultPath || "/graph/zag-daemon>keys"
     , public:      options.public
     })
   this.server = http.createServer(function(req, res) { _this.onRequest(req, res) })

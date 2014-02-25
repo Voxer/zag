@@ -1,5 +1,5 @@
 {
-  "name": "stats",
+  "name": "zag-meta",
   "version": "0.0.0",
   "author": "sentientwaffle",
   "description": "meta metrics package",
@@ -7,8 +7,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/voxer/zag.git"
+  },
+  "homepage": "https://github.com/voxer/zag",
   "readmeFilename": "README.md",
   "dependencies": {
     "stylus": "~0.27.1",

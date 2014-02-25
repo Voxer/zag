@@ -1,5 +1,5 @@
 {
-  "name": "metrics-web",
+  "name": "zag-web",
   "version": "0.0.0",
   "author": "sentientwaffle",
   "description": "graph metrics",
@@ -10,6 +10,11 @@
   "bin": {
     "admin": "./bin/admin.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/voxer/zag.git"
+  },
+  "homepage": "https://github.com/voxer/zag",
   "dependencies": {
     "stylus": "~0.27.1",
     "nib": "~0.5.0",
@@ -22,16 +27,15 @@
     "open-new-tab": "~0.0.1",
     "browser-keymap": "~0.0.1",
     "skyview": "~0.0.0",
-    "event-source-emitter": "~0.0.2"
+    "event-source-emitter": "~0.0.2",
+    "zag-agent": "~0.0.0"
   },
   "devDependencies": {
     "tap": "~0.4.4"
   },
-  "engines": {
-    "node": "*"
-  },
   "keywords": [
-    "metrics"
-  ],
-  "private": true
+    "zag",
+    "metrics",
+    "graphs"
+  ]
 }

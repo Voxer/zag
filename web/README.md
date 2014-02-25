@@ -1,25 +1,27 @@
-# metrics-web
+# zag
 
-Metrics-Web serves the graphing frontend.
+Zag-Web serves the graphing frontend.
 
 # Setup
 
 Start the server:
 
-    require('metrics-web')(
-    { host:        "address:port"
-    , db:          "postgres://postgres:1234@localhost/postgres"
-    , env:         "dev" or "prod"
-    , daemons:    ["address:port", ...]
-    , defaultPath: "/graph/your_favorite_metric"
-    , backend:     require('metrics-backend-pg')
-    // This directory needs to be readable and writable by the process.
-    , public:      "/tmp/metrics-public"
-    }).on("error", function(err) {
-      // An error occurred.
-    }).on("ready", function() {
-      // The server is listening.
-    })
+```javascript
+require('zag')(
+{ host:        "address:port"
+, db:          "postgres://postgres:1234@localhost/postgres"
+, env:         "dev" or "prod"
+, daemons:    ["address:port", ...]
+, defaultPath: "/graph/your_favorite_metric"
+, backend:     require('zag-backend-pg')
+// This directory needs to be readable and writable by the process.
+, public:      "/tmp/metrics-public"
+}).on("error", function(err) {
+  // An error occurred.
+}).on("ready", function() {
+  // The server is listening.
+})
+```
 
 # Features
 

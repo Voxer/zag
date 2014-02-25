@@ -1,7 +1,7 @@
 var EventEmitter      = require('events').EventEmitter
   , inherits          = require('util').inherits
   , dgram             = require('dgram')
-  , agent             = require('../../agent')
+  , agent             = require('zag-agent')
   , MetricsMonitor    = require('./monitor')
   , MetricsAggregator = require('./aggregator')
   , MetricsRing       = require('./server/ring')
@@ -35,7 +35,7 @@ function MetricsDaemon(options) {
 
   this.agent   = agent([options.host])
   this.agent.on("error", this.onError.bind(this))
-  this.metrics = this.agent.scope("metrics-daemon")
+  this.metrics = this.agent.scope("zag-daemon")
 
   Ring.init(
     { name: options.host

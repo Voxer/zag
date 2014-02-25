@@ -1,4 +1,4 @@
-var PacketQueue = require('../../../agent').PacketQueue
+var PacketQueue = require('zag-agent').PacketQueue
 
 module.exports = MetricsRing
 

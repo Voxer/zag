@@ -1,17 +1,21 @@
 {
-  "name": "metrics-backend-pg",
+  "name": "zag-backend-pg",
   "version": "0.0.0",
   "author": "sentientwaffle",
-  "description": "postgres backend for metrics",
+  "description": "postgres backend for zag metrics",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/voxer/zag.git"
+  },
+  "homepage": "https://github.com/voxer/zag",
   "keywords": [
+    "zag",
     "metrics"
   ],
-  "private": true,
   "dependencies": {
     "pg": "~2.10.0"
   }

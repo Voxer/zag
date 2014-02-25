@@ -3,7 +3,7 @@ var LinkDialog        = require('../link-dialog')
   , Menu              = require('../menu')
   , inherits          = require('util').inherits
   , openNewTab        = require('open-new-tab')
-  , HELP              = "https://github.com/Voxer/metrics"
+  , HELP              = "https://github.com/Voxer/zag"
 
 module.exports = MainMenu
 
