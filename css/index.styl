@@ -1,0 +1,80 @@
+@import "nib"
+
+user-drag(val)
+  user-drag val
+  -webkit-user-drag val
+
+*
+  margin 0px
+  padding 0px
+
+body
+  background white
+  color #222
+  font-family Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif
+  font-size 12px
+
+::selection
+  background #444
+  color white
+::-moz-selection
+  background #444
+  color white
+
+feature-height = 200px
+feature-width  = 300px
+
+////////////////////////////////////////////////////////////////////////////////
+
+.container-center
+  margin 0px auto
+  // image width + frame padding + frame margin + image border
+  width (feature-width + 4px + 20px + 2px) * 3
+
+////////////////////////////////////////
+
+.header
+  border-bottom 2px solid #ddd
+  margin 0px 10px 10px
+
+.header-links
+  float right
+
+.header-link
+  color #444
+  display inline-block
+  padding 14px 8px
+  &:hover
+    text-decoration none
+
+.header-title
+  font-weight bold
+  padding-left 0px
+
+////////////////////////////////////////
+
+.summary
+  font-size 16px
+  margin 22px
+  text-align center
+
+////////////////////////////////////////
+
+frame-bg = #f4f4f4
+
+.feature
+  background frame-bg
+  box-shadow 0px 1px 1px rgba(black, 0.4)
+  float left
+  margin-bottom 20px
+  margin 0px 10px 20px
+  padding 2px
+  > img
+    border 1px solid darken(frame-bg, 10%)
+    height feature-height
+    user-drag none
+    width feature-width
+  > p
+    font-size 12px
+    text-align center
+

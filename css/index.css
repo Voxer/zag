@@ -1,0 +1,66 @@
+* {
+  margin: 0px;
+  padding: 0px;
+}
+body {
+  background: #fff;
+  color: #222;
+  font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+}
+::selection {
+  background: #444;
+  color: #fff;
+}
+::-moz-selection {
+  background: #444;
+  color: #fff;
+}
+.container-center {
+  margin: 0px auto;
+  width: 978px;
+}
+.header {
+  border-bottom: 2px solid #ddd;
+  margin: 0px 10px 10px;
+}
+.header-links {
+  float: right;
+}
+.header-link {
+  color: #444;
+  display: inline-block;
+  padding: 14px 8px;
+}
+.header-link:hover {
+  text-decoration: none;
+}
+.header-title {
+  font-weight: bold;
+  padding-left: 0px;
+}
+.summary {
+  font-size: 16px;
+  margin: 22px;
+  text-align: center;
+}
+.feature {
+  background: #f4f4f4;
+  -webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
+  float: left;
+  margin-bottom: 20px;
+  margin: 0px 10px 20px;
+  padding: 2px;
+}
+.feature > img {
+  border: 1px solid #dcdcdc;
+  height: 200px;
+  user-drag: none;
+  -webkit-user-drag: none;
+  width: 300px;
+}
+.feature > p {
+  font-size: 12px;
+  text-align: center;
+}
