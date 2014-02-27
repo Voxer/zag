@@ -1,21 +1,30 @@
+#!/usr/bin/env node
+
 /*
 "dependencies": {
   "st": "~0.2.3",
   "stylus": "~0.42.0",
-  "nib": "~1.0.2"
+  "nib": "~1.0.2",
+  "marked": "~0.3.1"
 }
 */
 var fs     = require('fs')
   , path   = require('path')
+  , http   = require('http')
   , stylus = require('stylus')
   , nib    = require('nib')
-  , http   = require('http')
+  , marked = require('marked')
   , st     = require('st')
   , r      = path.resolve
+  , reTmpl = /{{([^{}]*)}}/g
+  , left   = 2
 
-makeStylus(r("./css/index.styl"), r("./css/index.css"), done)
+makeStylus(r("./template/index.styl"), r("./index.css"), done)
+makeHTML(r("./template/index.html"), r("./template/index.md"), r("./index.html"), done)
 
-function done() {
+function done(err) {
+  if (err) throw err
+  if (--left > 0) return
   http.createServer
   ( st
     ( { path:        __dirname
@@ -41,4 +50,25 @@ function makeStylus(from, to, callback) {
         fs.writeFile(to, css, callback)
       })
   })
+}
+
+function makeHTML(fromHTML, fromMarkdown, to, callback) {
+  var html = fs.readFileSync(fromHTML).toString()
+    , md   = fs.readFileSync(fromMarkdown).toString()
+  fs.writeFile(to,
+    html.replace("{body}", marked(md))
+        .replace(reTmpl, template), callback)
+}
+
+function template(match, inner) {
+  return eval(inner)
+}
+
+function feature(img, label, href) {
+  return '<div class="feature">'
+       +   (href ? '<a class="feature-link" href="' + href + '">' : '')
+       +     '<img src="' + img + '" alt="' + label + '"/>'
+       +     '<p class="feature-label">' + label + '</p>'
+       +   (href ? '</a>' : '')
+       + '</div>'
 }

@@ -6,7 +6,7 @@ body {
   background: #fff;
   color: #222;
   font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 12px;
+  font-size: 14px;
 }
 ::selection {
   background: #444;
@@ -60,7 +60,48 @@ body {
   -webkit-user-drag: none;
   width: 300px;
 }
-.feature > p {
+.feature-link,
+.feature-label {
+  color: #222;
   font-size: 12px;
+  margin: 0px;
   text-align: center;
+  text-decoration: none;
+}
+h3,
+h4 {
+  clear: both;
+  text-align: center;
+}
+h3 {
+  background: #f4f4f4;
+  border: 1px solid #dcdcdc;
+  -webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
+  font-size: 18px;
+  margin: 10px;
+  padding: 10px 0px;
+}
+p {
+  margin: 12px 0px;
+  line-height: 17px;
+}
+ul,
+ol {
+  margin-left: 22px;
+}
+.col-1,
+.col-2,
+.col-3 {
+  float: left;
+  height: 246px;
+}
+.col-1 {
+  width: 33.33%;
+}
+.col-2 {
+  width: 66.66%;
+}
+.col-3 {
+  width: 100%;
 }
