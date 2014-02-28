@@ -1,15 +1,9 @@
-# zag-agent
+## zag-agent
 
 The metrics agent sends raw points to the zag-daemons where they will
 be aggregated.
 
-Metrics keys may include the characters: `[ \w/._()+:-]`, as well as `>`
-and `|` as separators. Metrics sent with invalid keys are silently ignored.
-
-In `A|B`, A is an aggregate key.
-In `A>B`, A has no points associated with it, it is just a scope in the tree widget.
-
-# Usage
+## API
 
 ```javascript
 var agent = require('zag-agent')([/* list of all metrics daemon "address:ports" */])

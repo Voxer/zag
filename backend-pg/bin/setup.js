@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var path         = require('path')
-  , psql         = require('pg')
-  , MetricsSaver = require('../')
+var path    = require('path')
+  , psql    = require('pg')
+  , Backend = require('../')
 
 var argv = process.argv
   , args = argv.slice(2)
@@ -12,10 +12,9 @@ var argv = process.argv
 
 if (!host || !env) usage()
 
-var ms = new MetricsSaver(
-  { db:     host
-  , env:    env
-  , logger: console
+var ms = new Backend(
+  { db:  host
+  , env: env
   })
 
 ms.setup(function(err) {

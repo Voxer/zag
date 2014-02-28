@@ -8,7 +8,7 @@
     "test": "tap $(find test -name '*.test.js' | sort)"
   },
   "bin": {
-    "admin": "./bin/admin.js"
+    "zag-admin": "./bin/admin.js"
   },
   "repository": {
     "type": "git",

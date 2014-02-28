@@ -1,17 +1,28 @@
-# Setup
+## [Zag](http://voxer.github.io/zag/)
 
-  1. Set up a Postgres database.
-  2. Run the setup script in [`zag-backend-pg`][backend].
-    This will create the tables and indices.
-  3. Setup some [`zag-daemon`][daemon] processes.
-    The daemons are responsible for aggregating and monitoring the metrics and
-    saving them to the database.
-  4. Setup a [`zag-web`][web] process. [`zag-web`][web] handles data visualization
-    and manages ancillary data such as tags and dashboards.
-  5. Start sending data to the daemons using [`zag-agent`][agent] in your application.
-  6. Explore the data in [`zag-web`][web]'s interface.
+Zag is a fast, scalable Node.js application for aggregating and visualizing real-time and historical metrics.
 
-[agent]: https://github.com/Voxer/zag/tree/master/agent
-[backend]: https://github.com/Voxer/zag/tree/master/backend-pg
-[daemon]: https://github.com/Voxer/zag/tree/master/daemon
-[web]: https://github.com/Voxer/zag/tree/master/web
+  * [Install/setup](#setup)
+  * [Zooming and panning](#zooming-and-panning)
+  * [Graph types](#graph-types)
+  * [Metrics keys](#metrics-keys)
+  * [Intervals](#intervals)
+  * [Deltas](#deltas)
+  * [Dashboards](#dashboards)
+  * [Tags](#tags)
+
+This repo is home to the following npm packages:
+
+  * [zag](https://www.npmjs.org/package/zag) _./web_
+  * [zag-agent](https://www.npmjs.org/package/zag-agent) _./agent_
+  * [zag-daemon](https://www.npmjs.org/package/zag-daemon) _./daemon_
+  * [zag-backend-pg](https://www.npmjs.org/package/zag-backend-pg) _./backend-pg_
+
+[setup]:               http://voxer.github.io/zag#setup
+[zooming-and-panning]: http://voxer.github.io/zag#zooming-and-panning
+[graph-types]:         http://voxer.github.io/zag#graph-types
+[metrics-keys]:        http://voxer.github.io/zag#metrics-keys
+[intervals]:           http://voxer.github.io/zag#intervals
+[deltas]:              http://voxer.github.io/zag#deltas
+[dashboards]:          http://voxer.github.io/zag#dashboards
+[tags]:                http://voxer.github.io/zag#tags

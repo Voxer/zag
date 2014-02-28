@@ -1,11 +1,11 @@
-# zag-daemon
+## zag-daemon
 
 The daemons aggregate the raw points sent by `zag-agent`.
 
 It is also responsible for monitoring and alerting, though that functionality
 is disabled for now.
 
-# Service setup
+## Service setup
 
 In order to scale, metrics data can be spread across multiple daemons that are
 configured as a ring. A list of their `address:port`s needs to be passed in

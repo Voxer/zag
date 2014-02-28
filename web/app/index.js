@@ -47,7 +47,7 @@ function MetricsWeb(options) {
   this.router = new MetricsRouter(
     { db:          this.db
     , agent:       this.metrics
-    , defaultPath: options.defaultPath || "/graph/zag-daemon>keys"
+    , defaultPath: options.defaultPath || "/graph/zag-daemon>backend>timing"
     , public:      options.public
     })
   this.server = http.createServer(function(req, res) { _this.onRequest(req, res) })

@@ -1,8 +1,8 @@
-# zag
+## zag
 
 Zag-Web serves the graphing frontend.
 
-# Setup
+## Setup
 
 Start the server:
 
@@ -23,7 +23,7 @@ require('zag')(
 })
 ```
 
-# Features
+## Features
 
   * Press `?` for keyboard shortcuts.
   * Graphs
@@ -41,5 +41,5 @@ require('zag')(
     * Use the `admin.js` script to create and manage tag categories.
     * To create a tag manually, right-click a graph's X axis.
     * To edit an existing tag, left-click it's tick mark on the X axis.
-  * There is an API CLI in [`web/bin/admin.js`](https://github.com/Voxer/metrics/blob/master/web/bin/admin.js).
+  * There is an API CLI in [`web/bin/admin.js`](https://github.com/Voxer/zag/blob/master/web/bin/admin.js).
 
