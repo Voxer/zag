@@ -2,14 +2,14 @@
 
 Zag is a fast, scalable Node.js application for aggregating and visualizing real-time and historical metrics.
 
-  * [Install/setup](#setup)
-  * [Zooming and panning](#zooming-and-panning)
-  * [Graph types](#graph-types)
-  * [Metrics keys](#metrics-keys)
-  * [Intervals](#intervals)
-  * [Deltas](#deltas)
-  * [Dashboards](#dashboards)
-  * [Tags](#tags)
+  * [Install/setup][setup]
+  * [Zooming and panning][zooming-and-panning]
+  * [Graph types][graph-types]
+  * [Metrics keys][metrics-keys]
+  * [Intervals][intervals]
+  * [Deltas][deltas]
+  * [Dashboards][dashboards]
+  * [Tags][tags]
 
 This repo is home to the following npm packages:
 
