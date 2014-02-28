@@ -5,14 +5,40 @@
     <title>Zag Metrics</title>
     <link rel="stylesheet" href="index.css"/>
     <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.addEventListener("click", function(event) {
+          var target = event.target
+          if (target.className.indexOf("feature-play-gif") > -1) {
+            togglePlayback(target.parentElement)
+          }
+        })
+      })
+
+      var reExt = /\.(png|gif)$/
+      function togglePlayback(featureEl) {
+        var imgEl   = featureEl.querySelector("img")
+          , src     = imgEl.src
+          , fromExt = getExt(src)
+          , toExt   = notExt(fromExt)
+        imgEl.src = src.replace(reExt, "." + toExt)
+        featureEl.className = featureEl.className
+          .replace("feature-" + fromExt,
+                   "feature-" + toExt)
+      }
+
+      function notExt(ext) { return ext === "png" ? "gif" : "png" }
+      function getExt(src) { return reExt.exec(src)[1] }
+    </script>
   </head>
   <body>
     <div class="container-center">
 
       <div class="header">
         <div class="header-links">
+          <a class="header-link" href="#setup">install</a>
+          <a class="header-link" href="#zooming-and-panning">documentation</a>
           <a class="header-link" href="https://github.com/voxer/zag">source</a>
-          <a class="header-link" href="#setup">documentation</a>
           <a class="header-link" href="https://github.com/voxer/zag/issues">bugs</a>
         </div>
         <a class="header-link header-title" href="/">zag metrics</a>
@@ -27,35 +53,65 @@
 
       <div class="features">
         <div class="feature-row">
-          <div class="feature"><a class="feature-link" href="#graph-types"><img src="images/snaps/histogram.png" alt="Plot counters and histograms"/><p class="feature-label">Plot counters and histograms</p></a></div>
-          <div class="feature"><a class="feature-link" href="#dashboards"><img src="images/snaps/dashboard.png" alt="Dashboards"/><p class="feature-label">Dashboards</p></a></div>
-          <div class="feature"><a class="feature-link" href="#intervals"><img src="images/snaps/live.png" alt="Real-time metrics"/><p class="feature-label">Real-time metrics</p></a></div>
+          <div class="feature feature-png"><a class="feature-link" href="#graph-types"><img class="feature-image" src="images/snaps/histogram.png" alt="Plot counters and histograms"/><p class="feature-label">Plot counters and histograms</p></a></div>
+          <div class="feature feature-png"><a class="feature-link" href="#dashboards"><img class="feature-image" src="images/snaps/dashboard.png" alt="Dashboards"/><p class="feature-label">Dashboards</p></a></div>
+          <div class="feature feature-png"><a class="feature-link" href="#intervals"><img class="feature-image" src="images/snaps/live.png" alt="Real-time metrics"/><p class="feature-label">Real-time metrics</p></a></div>
         </div>
         <div class="feature-row">
-          <div class="feature"><a class="feature-link" href="#histogram"><img src="images/snaps/heat-map.png" alt="Heat maps"/><p class="feature-label">Heat maps</p></a></div>
-          <div class="feature"><a class="feature-link" href="#tags"><img src="images/snaps/tags.png" alt="Tag events"/><p class="feature-label">Tag events</p></a></div>
-          <div class="feature"><a class="feature-link" href="#metrics-keys"><img src="images/snaps/tree-expanded.png" alt="Navigate thousands of keys"/><p class="feature-label">Navigate thousands of keys</p></a></div>
+          <div class="feature feature-png"><a class="feature-link" href="#histogram"><img class="feature-image" src="images/snaps/heat-map.png" alt="Heat maps"/><p class="feature-label">Heat maps</p></a></div>
+          <div class="feature feature-png"><a class="feature-link" href="#tags"><img class="feature-image" src="images/snaps/tags.png" alt="Tag events"/><p class="feature-label">Tag events</p></a></div>
+          <div class="feature feature-png"><a class="feature-link" href="#metrics-keys"><img class="feature-image" src="images/snaps/tree-expanded.png" alt="Navigate thousands of keys"/><p class="feature-label">Navigate thousands of keys</p></a></div>
         </div>
       </div>
 
       <div class="documentation">
         <h3 id="setup">Setup</h3>
-        <ol>
-<li>Set up a Postgres database.</li>
-<li>Run the setup script in <a href="https://github.com/Voxer/zag/tree/master/backend-pg"><code>zag-backend-pg</code></a>.
+
+        <div class="documentation-setup"><h4 id="quick-start-guide">Quick start guide</h4>
+<p>You&#39;ll need a Postgres database before you get started.</p>
+<p>Then:</p>
+<pre><code>$ npm install -g zag-standalone
+$ start-zag &lt;tcp://postgres URI&gt;
+zag-web listening on 0.0.0.0:8875
+zag-daemon pool: [&quot;127.0.0.1:8876&quot;]
+</code></pre><p>The first time you run it, wait a minute for the key list to populate
+with the first data points.
+Then, point your browser to the address the script printed.</p>
+<p>Now you&#39;re ready to start sending metrics data using <a href="https://github.com/Voxer/zag/tree/master/agent">zag-agent</a>.</p>
+<pre><code>$ npm install zag-agent
+</code></pre><p>then:</p>
+<pre><code class="lang-javascript">var agent = require(&#39;zag-agent&#39;)([&quot;127.0.0.1:8876&quot;])
+for (var i = 0; i &lt; 1000; i++) {
+  agent.histogram(&quot;foo|bar&quot;, Math.random() * 100)
+}
+
+agent.counter(&quot;demo&quot;)
+
+setTimeout(function() {
+  agent.close()
+}, 1500)
+</code></pre>
+<p>It can take up to 1 minute for non-live metrics to appear.</p>
+<h4 id="scaling-up">Scaling up</h4>
+<p>The standalone helper will only get you so far. If you are running zag in
+production, the load should be spread across multiple daemons.</p>
+<ol>
+<li>Set up a postgres database.</li>
+<li>Run the setup script in <a href="https://github.com/Voxer/zag/tree/master/backend-pg">zag-backend-pg</a>.
 This will create the tables and indices.</li>
-<li>Setup some <a href="https://github.com/Voxer/zag/tree/master/daemon"><code>zag-daemon</code></a> processes.
+<li>Setup some <a href="https://github.com/Voxer/zag/tree/master/daemon">zag-daemon</a> processes.
 The daemons are responsible for aggregating and monitoring the metrics and
 saving them to the database.</li>
-<li>Setup a <a href="https://github.com/Voxer/zag/tree/master/web"><code>zag-web</code></a> process. <a href="https://github.com/Voxer/zag/tree/master/web"><code>zag-web</code></a> handles data visualization
+<li>Setup a <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a> process. <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a> handles data visualization
 and manages ancillary data such as tags and dashboards.</li>
-<li>Start sending data to the daemons using <a href="https://github.com/Voxer/zag/tree/master/agent"><code>zag-agent</code></a> in your application.</li>
-<li>Explore the data in <a href="https://github.com/Voxer/zag/tree/master/web"><code>zag-web</code></a>&#39;s interface.</li>
+<li>Start sending data to the daemons using <a href="https://github.com/Voxer/zag/tree/master/agent">zag-agent</a> in your application.</li>
+<li>Explore the data in <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a>&#39;s interface.</li>
 </ol>
+</div>
 
         <h3 id="zooming-and-panning">Zooming and panning</h3>
 
-        <div class="feature"><img src="images/gifs/zoom-revert-2.gif" alt="Zoom, zoom, revert, revert"/><p class="feature-label">Zoom, zoom, revert, revert</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/zoom-revert-2.png" alt="Zoom, zoom, revert, revert"/><p class="feature-label">Zoom, zoom, revert, revert</p><button class="feature-play-gif">&#9654;</button></div>
         <div class="col-1">
           <p>
             To zoom a graph in the X or Y direction, just click and drag a range.
@@ -63,18 +119,18 @@ and manages ancillary data such as tags and dashboards.</li>
           </p>
           <p>To pan a graph up and down or side-to-side, shift-click and drag.</p>
         </div>
-        <div class="feature"><img src="images/gifs/pan-zoom-pan-1.gif" alt="Zooming and panning"/><p class="feature-label">Zooming and panning</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/pan-zoom-pan-1.png" alt="Zooming and panning"/><p class="feature-label">Zooming and panning</p><button class="feature-play-gif">&#9654;</button></div>
 
         <h3 id="graph-types">Graph types</h3>
 
-        <div class="feature"><img src="images/snaps/counter-2.png" alt="Counter"/><p class="feature-label">Counter</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/counter-2.png" alt="Counter"/><p class="feature-label">Counter</p></div>
         <div class="col-1">
           <h4 id="counter">Counter</h4>
           <p>A counter measures the number of events over an interval.</p>
         </div>
-        <div class="feature"><img src="images/snaps/stack.png" alt="Stack"/><p class="feature-label">Stack</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/stack.png" alt="Stacked counters"/><p class="feature-label">Stacked counters</p></div>
 
-        <div class="feature"><img src="images/snaps/histogram-subkeys.png" alt="Histogram subkeys"/><p class="feature-label">Histogram subkeys</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/histogram-subkeys.png" alt="Histogram subkeys"/><p class="feature-label">Histogram subkeys</p></div>
         <div class="col-1">
           <h4 id="histogram">Histogram</h4>
           <p>A histogram measures the distribution of a value. Fields measured:</p>
@@ -88,7 +144,7 @@ and manages ancillary data such as tags and dashboards.</li>
             <li><code>llquantize</code> - Log/linear quantile data for heat maps</li>
           </ul>
         </div>
-        <div class="feature"><img src="images/gifs/heat-map-zoom-1.gif" alt="Zooming a heat map"/><p class="feature-label">Zooming a heat map</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/heat-map-zoom-1.png" alt="Zooming a heat map"/><p class="feature-label">Zooming a heat map</p><button class="feature-play-gif">&#9654;</button></div>
 
         <h3 id="metrics-keys">Metrics keys</h3>
 
@@ -105,25 +161,25 @@ and manages ancillary data such as tags and dashboards.</li>
           </p>
           <p>In <code>A&gt;B</code>, A has no points associated with it, it is just a scope in the tree widget.</p>
         </div>
-        <div class="feature"><img src="images/snaps/tree-expanded.png" alt="Navigate thousands of keys"/><p class="feature-label">Navigate thousands of keys</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/tree-expanded.png" alt="Navigate thousands of keys"/><p class="feature-label">Navigate thousands of keys</p></div>
 
-        <div class="feature"><img src="images/gifs/key-tree-toggle-2.gif" alt="Expand/collapse key tree"/><p class="feature-label">Expand/collapse key tree</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/key-tree-toggle-2.png" alt="Expand/collapse key tree"/><p class="feature-label">Expand/collapse key tree</p><button class="feature-play-gif">&#9654;</button></div>
         <div class="col-1">
           <h4 id="key-tree">Key tree</h4>
           <p>Clicking on a triangle expands/collapses the keys.</p>
           <p>Shift-clicking on a triangle graphs all of the key's children.</p>
         </div>
-        <div class="feature"><img src="images/gifs/key-tree-bulk-overlay-1.gif" alt="Overlay keys"/><p class="feature-label">Overlay keys</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/key-tree-bulk-overlay-1.png" alt="Overlay keys"/><p class="feature-label">Overlay keys</p><button class="feature-play-gif">&#9654;</button></div>
 
-        <div class="feature"><img src="images/gifs/change-subkey-2.gif" alt="Overlay by subkey"/><p class="feature-label">Overlay by subkey</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/change-subkey-2.png" alt="Overlay by subkey"/><p class="feature-label">Overlay by subkey</p><button class="feature-play-gif">&#9654;</button></div>
         <div class="col-1">
           <p>Shift-click on a leaf to overlay it on the current graph.</p>
         </div>
-        <div class="feature"><img src="images/gifs/key-tree-filter-1.gif" alt="Filter keys"/><p class="feature-label">Filter keys</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/key-tree-filter-1.png" alt="Filter keys"/><p class="feature-label">Filter keys</p><button class="feature-play-gif">&#9654;</button></div>
 
         <h3 id="intervals">Intervals</h3>
 
-        <div class="feature"><img src="images/gifs/interval-links-1.gif" alt="Change interval"/><p class="feature-label">Change interval</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/interval-links-1.png" alt="Change interval"/><p class="feature-label">Change interval</p><button class="feature-play-gif">&#9654;</button></div>
         <div class="col-1">
           <p>
             By default, the interval is relative, e.g. if the last 6 hours are plotted
@@ -132,11 +188,11 @@ and manages ancillary data such as tags and dashboards.</li>
           </p>
           <p>Intervals selected from the "minutes" row of the range selector will be live.</p>
         </div>
-        <div class="feature"><img src="images/gifs/interval-live-1.gif" alt="Live sub-second metrics"/><p class="feature-label">Live sub-second metrics</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/interval-live-1.png" alt="Live sub-second metrics"/><p class="feature-label">Live sub-second metrics</p><button class="feature-play-gif">&#9654;</button></div>
 
         <h3 id="deltas">Deltas</h3>
 
-        <div class="feature"><img src="images/gifs/delta-override-2.gif" alt="Set the downsample interval manually"/><p class="feature-label">Set the downsample interval manually</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/gifs/delta-override-2.png" alt="Set the downsample interval manually"/><p class="feature-label">Set the downsample interval manually</p><button class="feature-play-gif">&#9654;</button></div>
         <div class="col-1">
           <p>A "delta" is the point's downsample interval.</p>
           <p>
@@ -148,11 +204,11 @@ and manages ancillary data such as tags and dashboards.</li>
 
         <h3 id="dashboards">Dashboards</h3>
 
-        <div class="feature"><img src="images/snaps/dashboard.png" alt="A basic dashboard"/><p class="feature-label">A basic dashboard</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/dashboard.png" alt="A basic dashboard"/><p class="feature-label">A basic dashboard</p></div>
         <div class="col-1">
           <p>Use dashboards to get a bird's-eye view of related graphs.</p>
         </div>
-        <div class="feature"><img src="images/snaps/dashboard-menu.png" alt="Select a dashboard"/><p class="feature-label">Select a dashboard</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/dashboard-menu.png" alt="Select a dashboard"/><p class="feature-label">Select a dashboard</p></div>
 
         <h3 id="tags">Tags</h3>
 
@@ -169,9 +225,9 @@ and manages ancillary data such as tags and dashboards.</li>
             <li><code>color</code> - A hex color, e.g. <code>#f00</code>.</li>
           </ul>
         </div>
-        <div class="feature"><img src="images/snaps/tags.png" alt="Tags"/><p class="feature-label">Tags</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/tags.png" alt="Tags"/><p class="feature-label">Tags</p></div>
 
-        <div class="feature"><img src="images/snaps/tag-new.png" alt="New tag"/><p class="feature-label">New tag</p></div>
+        <div class="feature feature-png"><img class="feature-image" src="images/snaps/tag-new.png" alt="New tag"/><p class="feature-label">New tag</p></div>
         <div class="col-2">
           <p>To start using tags, you need to create some 'tagtypes' using the admin script:</p>
         <code><pre>
@@ -185,6 +241,7 @@ $ zag/bin/admin.js tagtype create '#0000ff' 'Client release'</pre></code>
             Left-clicking a tag on the axis to modify it.
           </p>
         </div>
+
       </div>
     </div>
   </body>

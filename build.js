@@ -17,6 +17,7 @@ var fs     = require('fs')
   , st     = require('st')
   , r      = path.resolve
   , reTmpl = /{{([^{}]*)}}/g
+  , reGif  = /\.gif$/
   , left   = 2
 
 makeStylus(r("./template/index.styl"), r("./index.css"), done)
@@ -60,15 +61,23 @@ function makeHTML(fromHTML, fromMarkdown, to, callback) {
         .replace(reTmpl, template), callback)
 }
 
-function template(match, inner) {
-  return eval(inner)
-}
+function template(match, inner) { return eval(inner) }
+
+///
+/// Helpers
+///
 
 function feature(img, label, href) {
-  return '<div class="feature">'
+  var gif = ""
+  if (reGif.test(img)) {
+    img = img.replace(reGif, ".png")
+    gif = '<button class="feature-play-gif">&#9654;</button>'
+  }
+  return '<div class="feature feature-png">'
        +   (href ? '<a class="feature-link" href="' + href + '">' : '')
-       +     '<img src="' + img + '" alt="' + label + '"/>'
+       +     '<img class="feature-image" src="' + img + '" alt="' + label + '"/>'
        +     '<p class="feature-label">' + label + '</p>'
        +   (href ? '</a>' : '')
+       +   gif
        + '</div>'
 }

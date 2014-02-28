@@ -5,14 +5,40 @@
     <title>Zag Metrics</title>
     <link rel="stylesheet" href="index.css"/>
     <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.addEventListener("click", function(event) {
+          var target = event.target
+          if (target.className.indexOf("feature-play-gif") > -1) {
+            togglePlayback(target.parentElement)
+          }
+        })
+      })
+
+      var reExt = /\.(png|gif)$/
+      function togglePlayback(featureEl) {
+        var imgEl   = featureEl.querySelector("img")
+          , src     = imgEl.src
+          , fromExt = getExt(src)
+          , toExt   = notExt(fromExt)
+        imgEl.src = src.replace(reExt, "." + toExt)
+        featureEl.className = featureEl.className
+          .replace("feature-" + fromExt,
+                   "feature-" + toExt)
+      }
+
+      function notExt(ext) { return ext === "png" ? "gif" : "png" }
+      function getExt(src) { return reExt.exec(src)[1] }
+    </script>
   </head>
   <body>
     <div class="container-center">
 
       <div class="header">
         <div class="header-links">
+          <a class="header-link" href="#setup">install</a>
+          <a class="header-link" href="#zooming-and-panning">documentation</a>
           <a class="header-link" href="https://github.com/voxer/zag">source</a>
-          <a class="header-link" href="#setup">documentation</a>
           <a class="header-link" href="https://github.com/voxer/zag/issues">bugs</a>
         </div>
         <a class="header-link header-title" href="/">zag metrics</a>
@@ -40,7 +66,9 @@
 
       <div class="documentation">
         <h3 id="setup">Setup</h3>
-        {body}
+
+        <div class="documentation-setup">{body}</div>
+
         <h3 id="zooming-and-panning">Zooming and panning</h3>
 
         {{ feature("images/gifs/zoom-revert-2.gif", "Zoom, zoom, revert, revert") }}
@@ -60,7 +88,7 @@
           <h4 id="counter">Counter</h4>
           <p>A counter measures the number of events over an interval.</p>
         </div>
-        {{ feature("images/snaps/stack.png", "Stack") }}
+        {{ feature("images/snaps/stack.png", "Stacked counters") }}
 
         {{ feature("images/snaps/histogram-subkeys.png", "Histogram subkeys") }}
         <div class="col-1">
@@ -173,6 +201,7 @@ $ zag/bin/admin.js tagtype create '#0000ff' 'Client release'</pre></code>
             Left-clicking a tag on the axis to modify it.
           </p>
         </div>
+
       </div>
     </div>
   </body>

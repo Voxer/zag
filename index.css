@@ -46,19 +46,12 @@ body {
 }
 .feature {
   background: #f4f4f4;
-  -webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
-  box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
+  -webkit-box-shadow: 0px 0px 0px 1px #dcdcdc;
+  box-shadow: 0px 0px 0px 1px #dcdcdc;
   float: left;
-  margin-bottom: 20px;
   margin: 0px 10px 20px;
   padding: 2px;
-}
-.feature > img {
-  border: 1px solid #dcdcdc;
-  height: 200px;
-  user-drag: none;
-  -webkit-user-drag: none;
-  width: 300px;
+  position: relative;
 }
 .feature-link,
 .feature-label {
@@ -68,6 +61,39 @@ body {
   text-align: center;
   text-decoration: none;
 }
+.feature-image {
+  border: 1px solid #dcdcdc;
+  height: 200px;
+  user-drag: none;
+  -webkit-user-drag: none;
+  width: 300px;
+}
+.feature-play-gif {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  background: rgba(0,0,0,0.15);
+  border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  color: rgba(0,0,0,0.7);
+  cursor: pointer;
+  font-size: 40px;
+  height: 200px;
+  outline: none;
+  width: 300px;
+}
+.feature-play-gif:hover {
+  color: rgba(0,0,0,0.85);
+}
+.feature-gif > .feature-play-gif {
+  background: transparent;
+  color: transparent;
+}
+.documentation-setup {
+  margin: 0px auto;
+  width: 600px;
+}
 h3,
 h4 {
   clear: both;
@@ -76,19 +102,24 @@ h4 {
 h3 {
   background: #f4f4f4;
   border: 1px solid #dcdcdc;
-  -webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
-  box-shadow: 0px 1px 1px rgba(0,0,0,0.4);
   font-size: 18px;
+  font-weight: normal;
   margin: 10px;
   padding: 10px 0px;
 }
 p {
-  margin: 12px 0px;
+  margin: 12px 10px;
   line-height: 17px;
+}
+pre {
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  margin: 0px 26px;
+  padding: 2px;
 }
 ul,
 ol {
-  margin-left: 22px;
+  margin-left: 28px;
 }
 .col-1,
 .col-2,
