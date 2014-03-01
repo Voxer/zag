@@ -46,7 +46,7 @@
 
       <div class="summary">
         <p>
-          Zag is a fast, scalable Node.js application for aggregating and visualizing
+          Zag is a fast, scalable Node.js application for aggregating and visualizing both
           real-time and historical metrics.
         </p>
       </div>
@@ -115,11 +115,11 @@
             and <code>|</code> as separators. Metrics sent with invalid keys are silently ignored.
           </p>
           <p>
-            In <code>A|B</code>, A is an aggregate key, which means that every point that
+            In <code>A|B</code>, <code>A</code> is an aggregate key, which means that every point that
             gets sent to <code>A|B</code>, <code>A|C</code>, etc
             will also automatically be forwarded to <code>A</code>.
           </p>
-          <p>In <code>A&gt;B</code>, A has no points associated with it, it is just a scope in the tree widget.</p>
+          <p>In <code>A&gt;B</code>, <code>A</code> has no points associated with it, it is just a scope in the tree widget.</p>
         </div>
         {{ feature("images/snaps/tree-expanded.png", "Navigate thousands of keys") }}
 
@@ -143,7 +143,7 @@
         <div class="col-1">
           <p>
             By default, the interval is relative, e.g. if the last 6 hours are plotted
-            and you reload the graph it will still be the last 6 hours. To link to a fixed
+            and you reload the graph, it will still be the last 6 hours. To link to a fixed
             range, go to <em>&equiv;/Permalink</em>.
           </p>
           <p>Intervals selected from the "minutes" row of the range selector will be live.</p>
@@ -175,11 +175,11 @@
         <div class="col-2">
           <p>
             A tag marks an event globally, across all metrics. For example, you may mark
-            server releases so that metrics that change can be correlated to it after the fact.
+            server releases so that metrics that change can be correlated after the fact.
           </p>
           <p>Each tag contains the following fields:</p>
           <ul>
-            <li><code>id</code>    - Unique identifier for the tag, of the form <code>{time}_{random}</code>.</li>
+            <li><code>id</code>    - Unique identifier for the tag, in the form of <code>{time}_{random}</code>.</li>
             <li><code>ts</code>    - Timestamp marking the tag's location.</li>
             <li><code>label</code> - Some text specific to this tag describing the event that it marks.</li>
             <li><code>color</code> - A hex color, e.g. <code>#f00</code>.</li>

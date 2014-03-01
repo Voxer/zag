@@ -11,7 +11,7 @@ Then:
 
 The first time you run it, wait a minute for the key list to populate
 with the first data points.
-Then, point your browser to the address the script printed.
+Next, point your browser to the address the script printed.
 
 Now you're ready to start sending metrics data using [zag-agent][agent].
 
