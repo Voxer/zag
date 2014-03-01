@@ -56,7 +56,7 @@ function MetricsWeb(options) {
 
   // Generate assets.
   buildCSS(path.join(stylusDir, "index.styl"), function(err, css) {
-    if (err) return callback(err)
+    if (err) console.log(err)
     fs.writeFile(path.join(publicDir, "index.css"), css)
     buildJS(publicDir, options.env === "prod", function() {
       var addrport = options.host.split(":")
@@ -115,7 +115,7 @@ function buildJS(publicDir, minify, callback) {
   var bundle    = path.join(publicDir, "bundle.js")
     , bundleMin = path.join(publicDir, "bundle.min.js")
     , sourceMap = path.join(publicDir, "bundle.js.map")
-  browserify(path.join(jsDir, + "index.js")).bundle()
+  browserify(path.join(jsDir, "index.js")).bundle()
     .pipe(fs.createWriteStream(bundle))
     .on("close", done)
 
