@@ -29,9 +29,10 @@
     "event-source-emitter": "~0.0.2",
     "metrics": "~0.1.6",
     "pg": "~2.10.0",
-    "lb_pool": "~1.0.0"
+    "lb_pool": "~1.0.1"
   },
   "devDependencies": {
     "tap": "~0.4.4"
-  }
+  },
+  "private": true
 }

@@ -1,6 +1,6 @@
 ## [Zag](http://voxer.github.io/zag/)
 
-Zag is a fast, scalable Node.js application for aggregating and visualizing real-time and historical metrics.
+Zag is a fast, scalable Node.js application for aggregating and visualizing both real-time and historical metrics.
 
   * [Install/setup][setup]
   * [Zooming and panning][zooming-and-panning]

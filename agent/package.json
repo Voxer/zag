@@ -20,7 +20,7 @@
     "metrics"
   ],
   "dependencies": {
-    "lb_pool": "~1.0.0"
+    "lb_pool": "~1.0.1"
   },
   "devDependencies": {
     "tap": "~0.4.6"

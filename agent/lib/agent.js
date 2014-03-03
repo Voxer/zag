@@ -40,6 +40,7 @@ inherits(MetricsAgent, EventEmitter)
 MetricsAgent.prototype.close = function() {
   this.socket.close()
   this.queue.destroy()
+  this.pool.close()
   this.pool = this.offlineQueue = this.currentNode = this.socket = this.queue = null
 }
 

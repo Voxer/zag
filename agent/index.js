@@ -19,7 +19,9 @@ function makeAgent(hosts) {
   var agent = new MetricsAgent(pool)
 
   setTimeout(function () {
-    if (!agent.currentNode.healthy) agent.goOnline()
+    if (agent.currentNode && !agent.currentNode.healthy) {
+      agent.goOnline()
+    }
   }, 1000)
 
   // Ping loop.

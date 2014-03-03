@@ -102,3 +102,5 @@ MockPool.prototype.get_node = function() {
          , healthy: true
          }
 }
+
+MockPool.prototype.close = function() { }
