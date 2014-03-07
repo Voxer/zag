@@ -99,10 +99,10 @@ production, the load should be spread across multiple daemons.</p>
 <li>Set up a postgres database.</li>
 <li>Run the setup script in <a href="https://github.com/Voxer/zag/tree/master/backend-pg">zag-backend-pg</a>.
 This will create the tables and indices.</li>
-<li>Setup some <a href="https://github.com/Voxer/zag/tree/master/daemon">zag-daemon</a> processes.
+<li>Set up some <a href="https://github.com/Voxer/zag/tree/master/daemon">zag-daemon</a> processes.
 The daemons are responsible for aggregating and monitoring the metrics and
 saving them to the database.</li>
-<li>Setup a <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a> process. <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a> handles data visualization
+<li>Set up a <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a> process. <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a> handles data visualization
 and manages ancillary data such as tags and dashboards.</li>
 <li>Start sending data to the daemons using <a href="https://github.com/Voxer/zag/tree/master/agent">zag-agent</a> in your application.</li>
 <li>Explore the data in <a href="https://github.com/Voxer/zag/tree/master/web">zag-web</a>&#39;s interface.</li>
@@ -168,6 +168,10 @@ and manages ancillary data such as tags and dashboards.</li>
           <h4 id="key-tree">Key tree</h4>
           <p>Clicking on a triangle expands/collapses the keys.</p>
           <p>Shift-clicking on a triangle graphs all of the key's children.</p>
+          <p>
+            To create a new key, just start sending it data. Within 2 minutes of receiving the first
+            data point, the key will appear in the tree.
+          </p>
         </div>
         <div class="feature feature-png"><img class="feature-image" src="images/gifs/key-tree-bulk-overlay-1.png" alt="Overlay keys"/><p class="feature-label">Overlay keys</p><button class="feature-play-gif">&#9654;</button></div>
 
