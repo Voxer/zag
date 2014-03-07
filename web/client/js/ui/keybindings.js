@@ -28,7 +28,7 @@ module.exports = function(controller) {
     } else if (k === "7") { setStart("-1w") // weeks
     } else if (k === "8") { setStart("-2w")
     } else if (k === "9") { setStart("-3w")
-    } else if (k === "0") { setStart("-1m") // months
+    } else if (k === "0") { setStart("-1M") // months
 
     // Delta
     } else if (k === "~") { setDelta("auto")
