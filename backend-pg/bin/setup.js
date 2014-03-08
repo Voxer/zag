@@ -23,6 +23,6 @@ ms.setup(function(err) {
 })
 
 function usage() {
-  l("Usage: " + argv[0] + " " + path.basename(argv[1]) + " <postgres> <env>")
+  l("Usage: " + argv[0] + " " + path.basename(argv[1]) + " <tcp://user:password@hostname/dbname> <env>")
   process.exit()
 }

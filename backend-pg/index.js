@@ -12,14 +12,14 @@ var setup =
   , "CREATE TABLE $env_metrics_data ("
   + "  metrics_key varchar(512) NOT NULL,"
   + "  time_start bigint NOT NULL,"
-  + "  data json NOT NULL"
+  + "  data text NOT NULL"
   + ")"
   , "CREATE UNIQUE INDEX $env_key_time_idx ON $env_metrics_data (metrics_key, time_start)"
 
   , "CREATE TABLE $env_metrics_tags ("
   + "  id varchar(255) NOT NULL,"
   + "  ts bigint NOT NULL,"
-  + "  data json NOT NULL"
+  + "  data text NOT NULL"
   + ")"
   , makeKVIndex("tags")
   , "CREATE INDEX $env_tag_time_idx ON $env_metrics_tags (ts)"
@@ -32,7 +32,7 @@ var setup =
 function makeKVTable(table) {
   return "CREATE TABLE $env_metrics_" + table + " ("
        + "  id varchar(255) NOT NULL,"
-       + "  data json NOT NULL"
+       + "  data text NOT NULL"
        + ")"
 }
 
@@ -118,7 +118,7 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
     var rows   = res.rows
       , points = []
     for (var i = 0, off = 0; i < rows.length; i++) {
-      appendPoints(points, rows[i].data, start, end)
+      appendPoints(points, parseRow(rows[i].data), start, end)
     }
     callback(null, points)
   })
@@ -178,7 +178,7 @@ PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
   [mkey, chunk], function(err, res) {
     if (err) return done(err)
     var rows   = res    && res.rows
-      , points = rows   && rows[0] && rows[0].data
+      , points = rows   && rows[0] && parseRow(rows[0].data)
       , count  = points && points.length
     if (points) {
       if (count && points[count - 1].ts === pt.ts) {
@@ -220,7 +220,8 @@ PostgresBackend.prototype.deleteMetricsKey = function(mkey, callback) {
   this.query("DELETE FROM " + this.tKeys + " WHERE metrics_key=$1", [mkey], callback)
 }
 
-function toMetricsKey(row) {
+function toMetricsKey(data) {
+  var row = parseRow(data)
   return { key:  row.metrics_key
          , type: row.type
          }
@@ -280,8 +281,9 @@ PostgresBackend.prototype.getTagTypes = function(callback) {
 }
 
 function rowToTagType(row) {
-  row.data.id = row.id
-  return row.data
+  var data = parseRow(row.data)
+  data.id = row.id
+  return data
 }
 
 // typeOpts - {color, name}
@@ -353,13 +355,17 @@ PostgresBackend.prototype.query = function(sql, params, callback) {
 }
 
 PostgresBackend.prototype.reconnect = function() {
+  var isReconnect = !!this.client
   if (this.client) this.client.end()
   this.client = new pg.Client(this.url)
   this.client.on("error", this.onConnectionError.bind(this))
 
   var _this = this
   this.client.connect(function(err) {
-    if (err) setTimeout(_this.reconnect.bind(_this), 1000)
+    if (err) {
+      if (!isReconnect) throw err
+      setTimeout(_this.reconnect.bind(_this), 1000)
+    }
   })
 }
 
@@ -392,13 +398,17 @@ PostgresBackend.prototype._del = function(table, id, callback) {
 
 function getID(row) { return row.id }
 
-function getData(row) { return row.data }
+function getData(row) { return parseRow(row.data) }
 
 function pluckFirstData(id, callback) {
   return function(err, res) {
     var rows = res && res.rows
-      , val  = rows && rows[0] && rows[0].data
+      , val  = rows && rows[0] && parseRow(rows[0].data)
     if (val) val.id = id
     callback(err, val)
   }
+}
+
+function parseRow(row) {
+  return typeof row === "string" ? JSON.parse(row) : row
 }
