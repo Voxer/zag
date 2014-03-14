@@ -46,7 +46,7 @@ require('zag')(
 ## HTTP API
 ### Metrics
 #### `GET /api/metrics/:mkey`
-Get metrics data for a specific `:mkey`.
+Get historical (_not_ live) metrics data for a `:mkey`.
 ##### Querystring
 
   * `start` - Integer timestamp, _required_
@@ -63,6 +63,7 @@ The response JSON will depending on whether the data is a histogram, counter, he
 [ { "ts":    Integer
   , "count": Number
   , "mean":  Number
+  , "p10":   Number
   , ...
   } or { "ts": Integer, "empty": true }
 , ...
@@ -107,9 +108,10 @@ because there is no actual metrics data associated with it.
 #### `GET /api/keys/:parents`
 Get the children of 1 or more parent metrics keys.
 
-`:parents` is a comma-separated metrics keys to look up.
+`:parents` is a comma-separated list of metrics keys to look up.
 
 ##### Response: 200
+Returns lists of the child keys keyed by their parents.
 ```javascript
 { "parentkey1":
   [ { "key":         String
@@ -132,8 +134,8 @@ The associated metrics data is not deleted.
 Get a list of metrics keys matching a query.
 ##### Querystring
 
-  * `q`     - String query. _required_
-  * `limit` - Integer max results _optional_
+  * `q`     - String, the query. _required_
+  * `limit` - Integer, max results _optional_
 
 ##### Response: 200
 ```javascript
@@ -258,7 +260,7 @@ Get a dashboard by `:id`.
 
 #### `POST /api/dashboards/:id`
 Replace the dashboard.
-The post data should be `{"id": "dashboard id", "graphs": {all the graphs}}`.
+The post data should be `{"graphs": {all the graphs}}`.
 ##### Response: 204
 
 #### `PATCH /api/dashboards/:id`
