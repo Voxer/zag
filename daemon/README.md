@@ -41,7 +41,7 @@ where
   * `value` - Number. Positive or negative, integer or decimal.
 
 ### HTTP
-#### POST /api/metrics
+#### `POST /api/metrics`
 
 The POST body should be in the same format as the UDP data. The points are
 recorded as the arrive, so the client can just keep sending data down a
