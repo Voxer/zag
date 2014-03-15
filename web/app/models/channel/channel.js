@@ -57,9 +57,11 @@ MetricsChannel.prototype.add = function(mkey) {
 // mkey - String
 //
 MetricsChannel.prototype.remove = function(mkey) {
-  this.touch()
-  this.requests[mkey].destroy()
-  delete this.requests[mkey]
+  if (this.requests[mkey]) {
+    this.touch()
+    this.requests[mkey].destroy()
+    delete this.requests[mkey]
+  }
 }
 
 MetricsChannel.prototype.onPoint = function(point) {
