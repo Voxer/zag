@@ -77,7 +77,7 @@ DBKeyTree.prototype.listKeys = function(mkeys, callback) {
   }
   function onLoadKey(err, mkeys, parent) {
     if (err) error = err
-    else     trees[parent] = mkeys
+    else     trees[parent] = mkeys || []
     if (--total === 0) return callback(error, trees)
   }
 }

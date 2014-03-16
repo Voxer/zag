@@ -30,7 +30,9 @@ KeyTree.prototype.load = function(mkey, callback) {
     , leafs = this.root
     , missing
   for (var i = 0, l = path.length; i < l; i++) {
-    leafs = leafs[path[i]].children
+    var parent = leafs[path[i]]
+    if (!parent) break
+    leafs = parent.children
     if (!leafs) {
       missing = path.slice(i)
       break
@@ -112,6 +114,7 @@ KeyTree.prototype.loadOne = function(mkey, callback) {
       var leaf = siblings[i]
       if (leaf.key === mkey) return callback(null, leaf)
     }
+    callback(new Error("nonexistant leaf"))
   }
 }
 

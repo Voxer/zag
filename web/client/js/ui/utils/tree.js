@@ -446,7 +446,11 @@ TreeView.prototype.setScrollTop = function(scrollTop) {
 // leaf - String
 TreeView.prototype.toggleLeaf = function(leaf) { this.toggleElement(this.resolve(leaf)) }
 // leaf - String
-TreeView.prototype.expand = function(leaf, callback) { this.expandElement(this.resolve(leaf), callback) }
+TreeView.prototype.expand = function(leaf, callback) {
+  var leafEl = this.resolve(leaf)
+  // leafEl may not exist if the tree is being initialized to an invalid path.
+  if (leafEl) this.expandElement(leafEl, callback)
+}
 // leaf - String
 TreeView.prototype.collapse = function(leaf) { this.collapseElement(this.resolve(leaf)) }
 
