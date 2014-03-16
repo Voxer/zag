@@ -27,7 +27,7 @@ var node = {
     ring_state = new EventEmitter(),
     ring_ready = false,
     dirty = 0,
-    heartbeat_timer,
+    heartbeat_timer, reconfigure_timer,
     lines = new Error().stack,
     add_router, metrics, logger, log, warn, error;
 
@@ -545,7 +545,7 @@ exports.init = function init(_RV, options, on_ready) {
 
     heartbeat_timer = setInterval(launch_heartbeats, heartbeat_interval);
 
-    setTimeout(function () {
+    reconfigure_timer = setTimeout(function () {
         reconfigure_ring(true);
         ring_ready = true;
         ring_state.emit("ready", get_router_statuses());
@@ -556,6 +556,11 @@ exports.init = function init(_RV, options, on_ready) {
 
     check_join_set("command line");
 };
+
+exports.close = function () {
+    clearInterval(heartbeat_timer);
+    clearTimeout(reconfigure_timer);
+}
 
 exports.filters = {
     "GET /1/rr/heartbeat":

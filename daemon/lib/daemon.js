@@ -98,7 +98,9 @@ MetricsDaemon.prototype.close = function() {
   this.socket.close()
   this.http.close()
   this.ma.destroy()
-  this.db.close()
+  this.ms.close()
+  this.agent.close()
+  Ring.close()
 }
 
 MetricsDaemon.prototype.onError = function(err) { this.emit("error", err) }
