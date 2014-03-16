@@ -103,8 +103,9 @@ function MetricsRouter(options) {
   })
 }
 
-MetricsLoader.prototype.close = function() {
+MetricsRouter.prototype.close = function() {
   clearInterval(this.mkeyInterval)
+  this.channels.close()
 }
 
 MetricsRouter.prototype.makeRoute = function(actions) {

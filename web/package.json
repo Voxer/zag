@@ -31,7 +31,10 @@
     "zag-agent": "~0.0.0"
   },
   "devDependencies": {
-    "tap": "~0.4.4"
+    "tap": "~0.4.4",
+    "level": "~0.18.0",
+    "zag-daemon": "~0.0.0",
+    "zag-backend-leveldb": "~0.0.0"
   },
   "keywords": [
     "zag",

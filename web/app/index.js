@@ -74,6 +74,7 @@ MetricsWeb.prototype.close = function() {
   this.db.close()
   this.router.close()
   this.server.close()
+  this.agent.close()
 }
 
 var reRoute = /[*?]/g
