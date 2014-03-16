@@ -68,10 +68,10 @@
         <h3 id="setup">Setup</h3>
 
         <div class="documentation-setup"><h4 id="quick-start-guide">Quick start guide</h4>
-<p>You&#39;ll need a Postgres database before you get started.</p>
-<p>Then:</p>
+<p><code>zag-standalone</code> uses <a href="https://github.com/sentientwaffle/zag-backend-leveldb">LevelDB</a>
+as the default backend.</p>
 <pre><code>$ npm install -g zag-standalone
-$ start-zag &lt;tcp://postgres URI&gt;
+$ start-zag metrics.db
 zag-web listening on 0.0.0.0:8875
 zag-daemon pool: [&quot;127.0.0.1:8876&quot;]
 </code></pre><p>The first time you run it, wait a minute for the key list to populate
@@ -94,7 +94,8 @@ setTimeout(function() {
 <p>It can take up to 1 minute for non-live metrics to appear.</p>
 <h4 id="scaling-up">Scaling up</h4>
 <p>The standalone helper will only get you so far. If you are running zag in
-production, the load should be spread across multiple daemons.</p>
+production, the load should be spread across multiple daemons, which means
+LevelDB won&#39;t work anymore &ndash; on to Postgres.</p>
 <ol>
 <li>Set up a postgres database.</li>
 <li>Run the setup script in <a href="https://github.com/Voxer/zag/tree/master/backend-pg">zag-backend-pg</a>.

@@ -1,11 +1,10 @@
 #### Quick start guide
 
-You'll need a Postgres database before you get started.
-
-Then:
+`zag-standalone` uses [LevelDB](https://github.com/sentientwaffle/zag-backend-leveldb)
+as the default backend.
 
     $ npm install -g zag-standalone
-    $ start-zag <tcp://postgres URI>
+    $ start-zag metrics.db
     zag-web listening on 0.0.0.0:8875
     zag-daemon pool: ["127.0.0.1:8876"]
 
@@ -37,7 +36,8 @@ It can take up to 1 minute for non-live metrics to appear.
 #### Scaling up
 
 The standalone helper will only get you so far. If you are running zag in
-production, the load should be spread across multiple daemons.
+production, the load should be spread across multiple daemons, which means
+LevelDB won't work anymore &ndash; on to Postgres.
 
   1. Set up a postgres database.
   2. Run the setup script in [zag-backend-pg][backend].
