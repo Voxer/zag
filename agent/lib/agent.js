@@ -84,6 +84,7 @@ MetricsAgent.prototype.meter = function(mkey, value) { /* TODO */ }
 
 // data - String "<type>:<mkey>=<value>"
 MetricsAgent.prototype.send = function(data) {
+  if (!this.currentNode) return
   if (!this.currentNode.healthy) {
     this.offlineQueue.push(data)
     return
