@@ -1,6 +1,6 @@
 {
   "name": "zag-agent",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "sentientwaffle",
   "description": "send metrics to zag-daemon",
   "main": "index.js",
