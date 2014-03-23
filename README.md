@@ -18,6 +18,13 @@ This repo is home to the following npm packages:
   * [zag-daemon](https://www.npmjs.org/package/zag-daemon) _./daemon_
   * [zag-backend-pg](https://www.npmjs.org/package/zag-backend-pg) _./backend-pg_
 
+Backends:
+
+  * [Postgres](https://github.com/voxer/zag/tree/master/backend-pg):
+    recommended for production.
+  * [LevelDB](https://github.com/sentientwaffle/zag-backend-leveldb):
+    recommended for getting started with, testing, and developing Zag.
+
 [setup]:               http://voxer.github.io/zag#setup
 [zooming-and-panning]: http://voxer.github.io/zag#zooming-and-panning
 [graph-types]:         http://voxer.github.io/zag#graph-types

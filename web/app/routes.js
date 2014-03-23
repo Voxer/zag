@@ -236,8 +236,8 @@ function deleteMetricKey(req, res) {
 //
 // Response: 200 JSON
 function filterMetricKeys(req, res) {
-  var query = req.qs.q
-    , limit = req.qs.limit || 100
+  var query =  req.qs.q
+    , limit = +req.qs.limit || 100
 
   if (!query) {
     res.statusCode = 400
@@ -264,17 +264,18 @@ function listAllMetricKeys(req, res) {
 // Get the metrics data for a specific stat.
 //
 // Parameters:
-//   * start - Integer timestamp, required
-//   * end   - Integer timestamp, required
-//   * delta - Integer minutes (1, 5, 60, ...) (optional).
+//   * start   - Integer timestamp, required
+//   * end     - Integer timestamp, required
+//   * delta   - Integer minutes (1, 5, 60, ...) (optional).
+//   * nocache - (optional). If set, dont read from the delta cache.
 //
 // Response: 200 JSON point data
 function getMetricData(req, res) {
   var mkey  = decodeURIComponent(req.splats[0])
     , query = req.qs
-    , start = query.start
-    , end   = query.end
-    , delta = query.delta || minToMS(1)
+    , start = +query.start
+    , end   = +query.end
+    , delta = +query.delta || minToMS(1)
     , agent = this.agent
 
   if (!start || !end) {
@@ -292,15 +293,15 @@ function getMetricData(req, res) {
   agent.histogram("get_metrics>interval", end - start)
 
   this.metrics.load(mkey,
-  { start:    +start
-  , end:      +end
-  , delta:    +delta
+  { start:    start
+  , end:      end
+  , delta:    delta
   , nocacheR: !!query.nocache
   }, function(err, points, type) {
     if (err) return sendError(err, res)
 
     // Don't cache data if it is incomplete.
-    if (+end < Date.now()) res.setHeader("ETag", etag)
+    if (end < Date.now()) res.setHeader("ETag", etag)
     agent.histogram("get_metrics>points", points.length)
     agent.counter("get_metrics>type|" + type)
     writeJSON(req, res, points)
@@ -321,7 +322,7 @@ function listDashboards(req, res) {
   })
 }
 
-// GET /api/dashboard/:id
+// GET /api/dashboards/:id
 //
 // Response: 200 JSON {id, graphs}
 function getDashboard(req, res) {
@@ -335,7 +336,7 @@ function getDashboard(req, res) {
   })
 }
 
-// POST /api/dashboard/:id
+// POST /api/dashboards/:id
 // Body: JSON {id, graphs}
 //
 // Replace a dashboard.
@@ -350,7 +351,7 @@ function setDashboard(req, res) {
   })
 }
 
-// PATCH /api/dashboard/:id
+// PATCH /api/dashboards/:id
 // Body: JSON
 //   { id:     String
 //   , graphs: {id : {name, keys, renderer, histkeys, subkey}}
@@ -363,11 +364,17 @@ function patchDashboard(req, res) {
   var dashboards = this.dashboards
   collectJSON(req, function(err, dashboard) {
     if (err) return sendError(err, res)
-    dashboards.modify(req.params.id, dashboard, send204(res))
+    dashboards.modify(req.params.id, dashboard, function(err) {
+      if (err && err.message === "no dashboard") {
+        res.statusCode = 404
+        return res.end()
+      }
+      send204(res)(err)
+    })
   })
 }
 
-// DELETE /api/dashboard/:id
+// DELETE /api/dashboards/:id
 //
 // Response: 204
 function deleteDashboard(req, res) {
@@ -385,12 +392,13 @@ function deleteDashboard(req, res) {
 //
 // Response: 200 JSON.
 function getTags(req, res) {
-  var q = req.qs
-  if (!q.begin || !q.end) {
+  var begin = +req.qs.begin
+    , end   = +req.qs.end
+  if (!begin || !end) {
     res.statusCode = 400
     return res.end()
   }
-  this.db.getTagRange(+q.begin, +q.end, function(err, tags) {
+  this.db.getTagRange(begin, end, function(err, tags) {
     if (err) return sendError(err, res)
     writeJSON(req, res, tags)
   })
@@ -405,8 +413,9 @@ function getTags(req, res) {
 //
 // Response: 204
 function createTag(req, res) {
-  var q = req.qs
-  if (!q.ts || !q.label || !q.color) {
+  var q  = req.qs
+    , ts = +q.ts
+  if (!ts || !q.label || !q.color || !TagTypeManager.isColor(q.color)) {
     res.statusCode = 400
     return res.end()
   }
@@ -414,7 +423,7 @@ function createTag(req, res) {
     { id:    q.id
     , label: q.label
     , color: q.color
-    , ts:   +q.ts
+    , ts:    ts
     }, send204(res))
 }
 
@@ -540,7 +549,7 @@ function canGZip(req, res) {
 // will accept it.
 //
 // req, res
-// data - String or Buffer
+// data - String
 //
 function resCompress(req, res, data) {
   if (canGZip(req, res) && data.length > 1000) {

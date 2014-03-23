@@ -73,6 +73,8 @@ cursor-border = leaf-height / 2 - cursor-shrink
     margin-top cursor-shrink
     position absolute
     right 0px
+    // Don't move to the next line when the label is long.
+    white-space nowrap
     width 0px
 
 // A selected leaf. There may be more than 1.

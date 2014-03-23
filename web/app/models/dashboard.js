@@ -51,7 +51,7 @@ DashboardManager.prototype.modify = function(id, updates, callback) {
   var _this = this
   this.get(id, function(err, dash) {
     if (err)   return callback(err)
-    if (!dash) return callback(new Error("Invalid dashboard id"))
+    if (!dash) return callback(new Error("no dashboard"))
 
     dash.id = updates.id || id
     _this.set(dash.id, applyUpdates(dash, updates), function(err) {
