@@ -147,6 +147,9 @@ DashboardChartView.prototype.hideChartPicker = function() {
 // ev - DOM click Event
 DashboardChartView.prototype.onClickPicker = function(ev) {
   var target = ev.target
+  if (target.className.indexOf("chart-target-label") !== -1) {
+    target = target.parentElement
+  }
   if (target.className !== "chart-target") return
   this.onPickChart(this.layout.charts.charts[+target.dataset.i])
   this.hideChartPicker()
