@@ -71,6 +71,17 @@ test("PointSet#xToIndexApprox", function(t) {
   t.end()
 })
 
+test("PointSet#xToIndexApprox duplicate X", function(t) {
+  var ps = new PointSet({data: [ [0, 1], [2, 3], [2, 3], [2, 3], [2, 3], [4, 5], [6, 7] ]})
+  ps.getX = function(pt) { return pt[0] }
+
+  // Exact
+  t.equals(ps.xToIndexApprox(0), 0)
+  t.equals(ps.xToIndexApprox(6), 6)
+
+  t.end()
+})
+
 test("PointSet#xToIndexApprox empty", function(t) {
   var ps = new PointSet({data: []})
   ps.getX = function() { t.fail() }

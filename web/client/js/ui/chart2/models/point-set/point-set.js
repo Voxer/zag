@@ -60,7 +60,7 @@ PointSet.prototype.xToIndexApprox = function(ts) {
     // ...*.X...
     if (cmp < ts) {
       var nextPoint = points[mid + 1]
-      if (!nextPoint || ts - cmp <= Math.abs(getX(nextPoint) - ts)) {
+      if (!nextPoint || ts - cmp < Math.abs(getX(nextPoint) - ts)) {
         return mid
       }
       min = mid + 1
