@@ -84,11 +84,18 @@ TagDialog.prototype.optionsHTML = function() {
   var current  = this.color
     , tagtypes = this.tagtypes
     , html     = ""
+    , found
   for (var i = 0; i < tagtypes.length; i++) {
     var tt    = tagtypes[i]
       , attrs = current === tt.color ? " selected" : ""
     html += '<option value="' + tt.color + '"' + attrs + '>'
           +   sail.escapeHTML(tt.name)
+          + '</option>'
+    found = found || attrs
+  }
+  if (current && !found) {
+    html += '<option value="' + current + '" selected>'
+          +   sail.escapeHTML("Custom: " + current)
           + '</option>'
   }
   return html
