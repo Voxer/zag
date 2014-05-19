@@ -27,7 +27,7 @@ function TagDialog(opts) {
   Dialog.call(this,
     { title:       opts.delete ? 'Edit'   : 'New'
     , create:      opts.delete ? 'Update' : 'Create'
-    , label:       this.label
+    , label:       this.label.replace(/"/g, "&quot;")
     , deleteHTML:  opts.delete ? this.deleteHTML() : ''
     , optionsHTML: this.optionsHTML()
     })

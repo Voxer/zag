@@ -41,7 +41,7 @@ function Menu(opts) {
 
   SkyView.call(this,
     { body:  this.innerHTML(opts.items)
-    , style: opts.style || ""
+    , style: (opts.style || "").replace(/"/g, "&quot;")
     })
 
   var _this = this

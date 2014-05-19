@@ -13,7 +13,7 @@ function DashboardChartDialog(chart, onDone) {
   this.chart  = chart
   this.onDone = onDone
   Dialog.call(this,
-    { title: sail.escapeHTML(chart.title || "")
+    { title: (chart.title || "").replace(/"/g, "&quot;")
     })
   this.titleEl.select()
 }
