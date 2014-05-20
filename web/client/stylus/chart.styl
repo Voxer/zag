@@ -1,4 +1,5 @@
 @import "nib"
+@import "./mixins"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Labels
@@ -19,7 +20,7 @@ hover-border-color = #ccc
   white-space nowrap
 .hover-date-label, .hover-tag-label
   font-size 12px
-  z-index 1
+  z-index z-chart-date-label
 .hover-date-label
   text-align center
   // fixed width to avoid reflow when innerText changes
@@ -28,7 +29,7 @@ hover-border-color = #ccc
   font-size 10px
   margin 0px 10px
   transform translateY(-50%)
-  z-index 2
+  z-index z-chart-value-label
 .hover-circle
   background white
   border 2px solid black
@@ -109,6 +110,7 @@ tag-width      = 2px
   height tag-max-height
   overflow hidden
   right 0px
+  z-index z-chart-tags
 
 // A single tag marker.
 .tag-line
