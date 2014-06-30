@@ -55,6 +55,22 @@ test("MetricsAgent#counter", function(t) {
     })
   })
 
+  test("rogue socket.close, then flush", function(t) {
+    var mc, done
+    dgramServer(function(pool, _done) {
+      mc = new MetricsAgent(pool)
+      pool.emit("health")
+      mc.histogram("foo", 123)
+      done = _done
+    }, function(msg) {
+      mc.counter("THIS_WILL_SEND_AFTER_THE_SOCKET_IS_CLOSED")
+      // Someone closes the socket out from under us
+      mc.socket.close()
+      // Wait until PacketQueue's interval timer wakes up.
+      setTimeout(function() { done(); t.end() }, 1500)
+    })
+  })
+
   t.end()
 })
 

@@ -30,6 +30,12 @@ function MetricsAgent(daemonPool) {
     _this.sendBulk(buf, off, len)
   })
 
+  this.isSocketClosed = false
+  // If someone (cluster.js) closes the socket, just run with it.
+  this.socket.on("close", function() {
+    _this.isSocketClosed = true
+    _this.close()
+  })
   this.socket.on("error", function(err) { _this.emit("error", err) })
   daemonPool.on("health", function() { _this.onPoolHealth() })
 }
@@ -38,10 +44,13 @@ inherits(MetricsAgent, EventEmitter)
 
 // Close the UDP socket and clean up.
 MetricsAgent.prototype.close = function() {
-  this.socket.close()
+  var socket = this.socket
+  // Ignore double-closes.
+  if (this.queue === null) return
   this.queue.destroy()
   this.pool.close()
   this.pool = this.offlineQueue = this.currentNode = this.socket = this.queue = null
+  if (!this.isSocketClosed) socket.close()
 }
 
 // Create an agent that scopes all of its metrics under `scope`.
