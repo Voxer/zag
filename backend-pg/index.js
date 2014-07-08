@@ -125,14 +125,15 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
 }
 
 function appendPoints(allPoints, newPoints, start, end) {
-  var last = 0
+  var count = allPoints.length
+    , last  = count ? allPoints[count - 1].ts : 0
   for (var i = 0; i < newPoints.length; i++) {
     var pt = newPoints[i]
       , ts = pt.ts
     if (ts > last && start <= ts && ts <= end) {
       allPoints.push(pt)
     }
-    last = ts
+    last = Math.max(last, ts)
   }
 }
 
