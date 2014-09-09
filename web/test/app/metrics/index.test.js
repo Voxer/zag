@@ -231,6 +231,22 @@ test("MetricsLoader#load nocacheW:true", function(t) {
   })
 })
 
+test("MetricsLoader#load future points", function(t) {
+  var ml = new MetricsLoader(loadPoints, fail(t), [1, 2, 5])
+  ml.load("keyC",
+  { start: Date.now() + 20
+  , end:   Date.now() + 50
+  , delta: 2
+  }, function(err, points, type) {
+    if (err) throw err
+    t.equals(type, "counter")
+    for (var i = 0, c = 50; i < points.length; i++, c+=2) {
+      t.equals(points[i].empty, true)
+    }
+    process.nextTick(function() { t.end() })
+  })
+})
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal

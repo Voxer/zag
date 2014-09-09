@@ -121,11 +121,18 @@ MetricsLoader.prototype.loadIntervals = function(key, options, intervals, callba
 
       if (options.nocacheW) return
 
-      // Don't save the last point until all of the points are in.
-      var lastPoint = gapPoints[gapPoints.length - 1]
-      if (lastPoint.ts + delta > Date.now()) {
+      // Don't save a point until all of its sub-points are in.
+      //
+      // Loop in case `end` is hours in the future to prevent empty points
+      // from being written before the interval has even started.
+      var now = Date.now()
+        , lastPoint
+      while ((lastPoint = gapPoints[gapPoints.length - 1])
+       && (lastPoint.ts + delta > now)) {
         gapPoints.pop()
       }
+
+      if (gapPoints.length === 0) return
 
       // Best effort: write the downsampled points to the cache for reuse.
       // Errors are ignored, b/c nobody cares.
