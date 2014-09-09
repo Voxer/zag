@@ -240,7 +240,7 @@ test("MetricsLoader#load future points", function(t) {
   }, function(err, points, type) {
     if (err) throw err
     t.equals(type, "counter")
-    for (var i = 0, c = 50; i < points.length; i++, c+=2) {
+    for (var i = 0; i < points.length; i++) {
       t.equals(points[i].empty, true)
     }
     process.nextTick(function() { t.end() })
