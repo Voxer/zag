@@ -55,6 +55,22 @@ test("MetricsAgent#counter", function(t) {
     })
   })
 
+  test("MAX_OFFLINE", function(t) {
+    var c = 0
+      , mc, done
+    dgramServer(function(pool, _done) {
+      mc = new MetricsAgent(pool)
+      for (var i = 0; i < 6000; i++) mc.counter("foo")
+      pool.emit("health")
+      done = _done
+    }, function(msg) {
+      var data = msg.toString()
+      if ((c += data.split("\n").length) === 5000) {
+        t.end(); done(); mc.close()
+      } else if (c > 5000) throw new Error("too many foos")
+    })
+  })
+
   test("rogue socket.close, then flush", function(t) {
     var mc, done
     dgramServer(function(pool, _done) {

@@ -8,6 +8,7 @@ module.exports = MetricsAgent
 
 // The number of metrics that should be sent to a daemon before selecting a new one.
 var MAX_SEQNO     = 1000
+  , MAX_OFFLINE   = 5000
   , unhealthyNode = {healthy: false}
   , lines         = new Error().stack
 
@@ -95,7 +96,7 @@ MetricsAgent.prototype.meter = function(mkey, value) { /* TODO */ }
 MetricsAgent.prototype.send = function(data) {
   if (!this.currentNode) return
   if (!this.currentNode.healthy) {
-    this.offlineQueue.push(data)
+    if (this.offlineQueue.length < MAX_OFFLINE) this.offlineQueue.push(data)
     return
   }
 
