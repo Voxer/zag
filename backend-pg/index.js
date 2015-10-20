@@ -178,7 +178,7 @@ PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
     [", " + JSON.stringify(pt) + "]", mkey, chunk], function (err, result) {
       // if there is an error or we have updated a row then move on
       // if we did not update a row then we need to insert a row
-      if (err || result && result.rowCount === 1) {
+      if (err || (result && result.rowCount === 1)) {
         return done(err, result);
       }
       _this.query
