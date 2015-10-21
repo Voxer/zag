@@ -171,19 +171,19 @@ PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
   var _this = this
     , chunk = toHour(pt.ts)
     , done  = callback || this._onPointInsert
+  this.query
+  ( "UPDATE " + _this.tData + " "
+  + "SET data=trim(trailing ']' from data) || $1"
+  + "WHERE metrics_key=$2 AND time_start=$3",
+  [", " + JSON.stringify(pt) + "]", mkey, chunk], function (err, result) {
+    // if there is an error or we have updated a row then move on
+    // if we did not update a row then we need to insert a row
+    if (err || (result && result.rowCount === 1)) {
+      return done(err, result);
+    }
     _this.query
-    ( "UPDATE " + _this.tData + " "
-    + "SET data=trim(trailing ']' from data) || $1"
-    + "WHERE metrics_key=$2 AND time_start=$3",
-    [", " + JSON.stringify(pt) + "]", mkey, chunk], function (err, result) {
-      // if there is an error or we have updated a row then move on
-      // if we did not update a row then we need to insert a row
-      if (err || (result && result.rowCount === 1)) {
-        return done(err, result);
-      }
-      _this.query
-        ( "INSERT INTO " + _this.tData + " VALUES($1, $2, $3)",
-          [mkey, chunk, JSON.stringify([pt])], done)
+    ( "INSERT INTO " + _this.tData + " VALUES($1, $2, $3)",
+      [mkey, chunk, JSON.stringify([pt])], done)
   })
 }
 
