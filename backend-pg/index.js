@@ -172,32 +172,19 @@ PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
     , chunk = toHour(pt.ts)
     , done  = callback || this._onPointInsert
   this.query
-  ( "SELECT data "
-  + "FROM " + this.tData + " "
-  + "WHERE metrics_key=$1 AND time_start=$2 "
-  + "LIMIT 1",
-  [mkey, chunk], function(err, res) {
-    if (err) return done(err)
-    var rows   = res    && res.rows
-      , points = rows   && rows[0] && parseRow(rows[0].data)
-      , count  = points && points.length
-    if (points) {
-      if (count && points[count - 1].ts === pt.ts) {
-        return
-      }
-      points.push(pt)
-      _this.query
-      ( "UPDATE " + _this.tData + " "
-      + "SET data=$1 "
-      + "WHERE metrics_key=$2 AND time_start=$3",
-      [JSON.stringify(points), mkey, chunk], done)
-    } else {
-      _this.query
-      ( "INSERT INTO " + _this.tData + " VALUES($1, $2, $3)",
-      [mkey, chunk, JSON.stringify([pt])], done)
+  ( "UPDATE " + _this.tData + " "
+  + "SET data=trim(trailing ']' from data) || $1"
+  + "WHERE metrics_key=$2 AND time_start=$3",
+  [", " + JSON.stringify(pt) + "]", mkey, chunk], function (err, result) {
+    // if there is an error or we have updated a row then move on
+    // if we did not update a row then we need to insert a row
+    if (err || (result && result.rowCount === 1)) {
+      return done(err, result);
     }
+    _this.query
+    ( "INSERT INTO " + _this.tData + " VALUES($1, $2, $3)",
+      [mkey, chunk, JSON.stringify([pt])], done)
   })
-  //this.query("INSERT INTO " + this.tData + " VALUES($1, $2, $3)", [mkey, pt.ts, JSON.stringify(pt)], callback || this._onPointInsert)
 }
 
 PostgresBackend.prototype.onKeyInsert = function(err) {
