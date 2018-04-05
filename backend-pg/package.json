@@ -17,6 +17,6 @@
     "metrics"
   ],
   "dependencies": {
-    "pg": "~3.2.0"
+    "pg": "7.4.1"
   }
 }

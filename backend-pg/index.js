@@ -1,3 +1,5 @@
+'use strict';
+
 var pg = require('pg')
 
 var reDup    = /^duplicate key value/
@@ -11,11 +13,27 @@ var setup =
   + ")"
   , "CREATE TABLE $env_metrics_data ("
   + "  metrics_key varchar(512) NOT NULL,"
-  + "  time_start bigint NOT NULL,"
-  + "  data text NOT NULL"
+  + "  ts bigint NOT NULL,"
+  + "  count bigint NULL,"
+  + "  max double precision NULL,"
+  + "  mean double precision NULL,"
+  + "  median double precision NULL,"
+  + "  std_dev double precision NULL,"
+  + "  p10 double precision NULL,"
+  + "  p75 double precision NULL,"
+  + "  p95 double precision NULL,"
+  + "  p99 double precision NULL"
   + ")"
-  , "CREATE UNIQUE INDEX $env_key_time_idx ON $env_metrics_data (metrics_key, time_start)"
-
+  , "CREATE UNIQUE INDEX $env_key_time_idx ON $env_metrics_data (metrics_key, ts)"
+  , "SELECT create_hypertable('$env_metrics_data', 'ts', chunk_time_interval => 604800000)"
+  , "CREATE TABLE $env_metrics_data_llq ("
+  + "  metrics_key varchar(512) NOT NULL,"
+  + "  ts bigint NOT NULL,"
+  + "  bucket double precision NULL,"
+  + "  frequency double precision NULL"
+  + ")"
+  , "CREATE INDEX $env_key_time_llq_idx ON $env_metrics_data_llq (metrics_key, ts)"
+  , "SELECT create_hypertable('$env_metrics_data_llq', 'ts', chunk_time_interval => 604800000)"
   , "CREATE TABLE $env_metrics_tags ("
   + "  id varchar(255) NOT NULL,"
   + "  ts bigint NOT NULL,"
@@ -66,6 +84,7 @@ function PostgresBackend(options) {
   // Tables
   this.tKeys       = this.env + "_metrics_keys"
   this.tData       = this.env + "_metrics_data"
+  this.tLlqData     = this.env + "_metrics_data_llq"
   this.tTags       = this.env + "_metrics_tags"
   this.tRules      = this.env + "_metrics_rules"
   this.tDashboards = this.env + "_metrics_dashboards"
@@ -75,6 +94,12 @@ function PostgresBackend(options) {
   var _this = this
   this._onKeyInsert   = function(err) { _this.onKeyInsert(err) }
   this._onPointInsert = function(err) { _this.onPointInsert(err) }
+}
+
+PostgresBackend.prototype.numberTypeParser = function (val) {
+  if (val) {
+    return parseFloat(val);
+  }
 }
 
 PostgresBackend.prototype.close = function() { this.client.end() }
@@ -106,37 +131,66 @@ PostgresBackend.prototype.setup = function(callback) {
 // start - Integer timestamp (ms)
 // end   - Integer timestamp (ms)
 // callback(err, [point])
-PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
-  this.query
-  ( "SELECT * FROM " + this.tData + " "
-  + "WHERE metrics_key=$1 "
-  + "AND time_start>=$2 "
-  + "AND time_start<=$3 "
-  + "ORDER BY time_start",
-  [mkey, toHour(start), toHour(end)], function(err, res) {
-    if (err) return callback(err)
-    var rows   = res.rows
-      , points = []
-    for (var i = 0, off = 0; i < rows.length; i++) {
-      appendPoints(points, parseRow(rows[i].data), start, end)
-    }
+PostgresBackend.prototype.getLlqPoints = function(mkey, start, end, callback) {
+  const points = [];
+  const sqlString = `
+  SELECT
+  ts,
+  bucket,
+  frequency
+  FROM ${this.tLlqData}
+  WHERE metrics_key=$1
+  AND ts>=$2
+  AND ts<=$3
+  ORDER BY ts;
+  `;
+  this.query(sqlString, [mkey, start, end], (err, res) => {
+    if (err) return callback(err);
+    let result = {};
+    res.rows.forEach((row, index) => {
+      if (!result.ts) {
+        result = { ts: row.ts, data: {} };
+      }
+      result.data[row.bucket] = row.frequency;
+      if (index === res.rows.length - 1 || res.rows[index + 1].ts !== row.ts) {
+        points.push(result);
+        result = {};
+      }
+    });
     callback(null, points)
-  })
+  });
+
 }
 
-function appendPoints(allPoints, newPoints, start, end) {
-  var count = allPoints.length
-    , last  = count ? allPoints[count - 1].ts : 0
-  for (var i = 0; i < newPoints.length; i++) {
-    var pt = newPoints[i]
-      , ts = pt.ts
-    if (ts > last && start <= ts && ts <= end) {
-      allPoints.push(pt)
-    }
-    last = Math.max(last, ts)
+// mkey  - String
+// start - Integer timestamp (ms)
+// end   - Integer timestamp (ms)
+// callback(err, [point])
+PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
+  if (mkey.indexOf('@llq') > -1) {
+    return this.getLlqPoints(...arguments);
   }
+  this.query
+  (`SELECT
+    ts,
+    count,
+    mean,
+    max,
+    median,
+    std_dev,
+    p10,
+    p75,
+    p95,
+    p99
+    FROM ${this.tData}
+    WHERE metrics_key=$1
+    AND ts>=$2
+    AND ts<=$3
+    ORDER BY ts`,
+  [mkey, start, end], (err, res) => {
+    callback(err, res.rows);
+  });
 }
-
 // points - { mkey : point }
 PostgresBackend.prototype.savePoints = function(points) {
   var mkeys = Object.keys(points)
@@ -163,29 +217,49 @@ function identify(pt) {
        : "counter"
 }
 
-var msHour = 1000 * 60 * 60
-
-function toHour(ms) { return ms - (ms % msHour) }
+PostgresBackend.prototype.saveLlqPoint = function (mkey, pt, callback) {
+  const done  = callback || this._onPointInsert;
+  const sqlString = `INSERT INTO ${this.tLlqData} SELECT $1, $2, cast(key as double precision) as bucket, cast(value as double precision) as frequency FROM json_each_text($3)`;
+  const sqlParams = [mkey, pt.ts, JSON.stringify(pt.data)];
+  this.query(sqlString, sqlParams, done);
+}
 
 PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
-  var _this = this
-    , chunk = toHour(pt.ts)
-    , done  = callback || this._onPointInsert
-  this.query
-  ( "UPDATE " + _this.tData + " "
-  + "SET data=trim(trailing ']' from data) || $1"
-  + "WHERE metrics_key=$2 AND time_start=$3",
-  [", " + JSON.stringify(pt) + "]", mkey, chunk], function (err, result) {
-    // if there is an error or we have updated a row then move on
-    // if we did not update a row then we need to insert a row
-    if (err || (result && result.rowCount === 1)) {
-      return done(err, result);
-    }
-    _this.query
-    ( "INSERT INTO " + _this.tData + " VALUES($1, $2, $3)",
-      [mkey, chunk, JSON.stringify([pt])], done)
-  })
-}
+  const done  = callback || this._onPointInsert;
+  if (pt.empty === true) {
+    return done(null, null);
+  }
+  if (mkey.indexOf('@llq') > -1) {
+    return this.saveLlqPoint(...arguments);
+  }
+  const sqlString = `INSERT INTO ${this.tData} (
+    metrics_key,
+    ts,
+    count,
+    max,
+    mean,
+    median,
+    std_dev,
+    p10,
+    p75,
+    p95,
+    p99
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
+  const sqlParams = [
+    mkey,
+    pt.ts,
+    pt.count,
+    pt.max,
+    pt.mean,
+    pt.median,
+    pt.std_dev,
+    pt.p10,
+    pt.p75,
+    pt.p95,
+    pt.p99
+  ];
+  this.query(sqlString, sqlParams, done);
+};
 
 PostgresBackend.prototype.onKeyInsert = function(err) {
   if (err && !reDup.test(err.message)) this.onError(err)
@@ -326,9 +400,10 @@ PostgresBackend.prototype.listDashboards = function(callback) {
 // Like `client.query`, but record latency and errors.
 PostgresBackend.prototype.query = function(sql, params, callback) {
   var agent = this.agent
+    , sql = sql.trim()
     , start = Date.now()
     , index = sql.indexOf(" ")
-    , cmd   = index === -1 ? sql : sql.slice(0, index)
+    , cmd   = (index === -1 ? sql : sql.slice(0, index)).trim()
     , table = this.reTable.exec(sql)
 
   table = table ? table[1] : "unknown"
@@ -346,6 +421,8 @@ PostgresBackend.prototype.reconnect = function() {
   var isReconnect = !!this.client
   if (this.client) this.client.end()
   this.client = new pg.Client(this.url)
+  this.client.setTypeParser(20, this.numberTypeParser);
+  this.client.setTypeParser(701, this.numberTypeParser);
   this.client.on("error", this.onConnectionError.bind(this))
 
   var _this = this
