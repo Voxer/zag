@@ -1,11 +1,13 @@
 'use strict';
 
-var pg = require('pg')
+const pg = require('pg')
 
-var reDup    = /^duplicate key value/
+const reDup    = /^duplicate key value/
   , reExists = /already exists/
+  , INT8OID = 20
+  , FLOAT8OID = 1022
 
-var setup =
+const setup =
   [ "CREATE TABLE $env_metrics_keys ("
   + "  metrics_key varchar(512) NOT NULL CONSTRAINT $env_key_idx UNIQUE,"
   + "  type varchar(255) NOT NULL,"
@@ -14,7 +16,7 @@ var setup =
   , "CREATE TABLE $env_metrics_data ("
   + "  metrics_key varchar(512) NOT NULL,"
   + "  ts bigint NOT NULL,"
-  + "  count bigint NULL,"
+  + "  count bigint NOT NULL,"
   + "  max double precision NULL,"
   + "  mean double precision NULL,"
   + "  median double precision NULL,"
@@ -29,8 +31,8 @@ var setup =
   , "CREATE TABLE $env_metrics_data_llq ("
   + "  metrics_key varchar(512) NOT NULL,"
   + "  ts bigint NOT NULL,"
-  + "  bucket double precision NULL,"
-  + "  frequency double precision NULL"
+  + "  bucket double precision NOT NULL,"
+  + "  frequency double precision NOT NULL"
   + ")"
   , "CREATE INDEX $env_key_time_llq_idx ON $env_metrics_data_llq (metrics_key, ts)"
   , "SELECT create_hypertable('$env_metrics_data_llq', 'ts', chunk_time_interval => 604800000)"
@@ -84,7 +86,7 @@ function PostgresBackend(options) {
   // Tables
   this.tKeys       = this.env + "_metrics_keys"
   this.tData       = this.env + "_metrics_data"
-  this.tLlqData     = this.env + "_metrics_data_llq"
+  this.tLlqData    = this.env + "_metrics_data_llq"
   this.tTags       = this.env + "_metrics_tags"
   this.tRules      = this.env + "_metrics_rules"
   this.tDashboards = this.env + "_metrics_dashboards"
@@ -421,8 +423,8 @@ PostgresBackend.prototype.reconnect = function() {
   var isReconnect = !!this.client
   if (this.client) this.client.end()
   this.client = new pg.Client(this.url)
-  this.client.setTypeParser(20, this.numberTypeParser);
-  this.client.setTypeParser(701, this.numberTypeParser);
+  this.client.setTypeParser(INT8OID, this.numberTypeParser);
+  this.client.setTypeParser(FLOAT8OID, this.numberTypeParser);
   this.client.on("error", this.onConnectionError.bind(this))
 
   var _this = this
