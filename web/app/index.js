@@ -126,8 +126,8 @@ function buildJS(publicDir, minify, callback) {
         .pipe(fs.createWriteStream(bundleMin))
         .on("close", callback)
     }
-    var res = uglify.minify(bundle, {outSourceMap: "/public/bundle.js.map"})
-      , map = JSON.parse(res.map)
+    var res = uglify.minify(fs.readFileSync(bundle, "utf8"), {sourceMap: { url: "/public/bundle.js.map" }})
+        map = JSON.parse(res.map)
     map.sources = ["/public/bundle.js"]
     res.code += "\n//# sourceMappingURL=/public/bundle.js.map"
     fs.writeFileSync(bundleMin, res.code)

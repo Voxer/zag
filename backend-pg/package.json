@@ -1,6 +1,6 @@
 {
   "name": "zag-backend-pg",
-  "version": "0.0.7",
+  "version": "1.0.0",
   "author": "sentientwaffle",
   "description": "postgres backend for zag metrics",
   "main": "index.js",
@@ -17,6 +17,6 @@
     "metrics"
   ],
   "dependencies": {
-    "pg": "~3.2.0"
+    "pg": "7.4.1"
   }
 }
