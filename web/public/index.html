@@ -3,6 +3,16 @@
   <head>
     <meta charset="utf-8"/>
     <title>[M]</title>
+    <script>
+      // Apply persisted theme before stylesheet loads to avoid a flash of light.
+      (function () {
+        try {
+          if (localStorage.getItem("zagTheme") === "dark") {
+            document.documentElement.setAttribute("data-theme", "dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="stylesheet" href="/public/index.css"/>
     <link rel="icon" type="image/x-icon" href="/public/favicon.ico"/>
     <script src="/public/bundle.min.js"></script>
@@ -25,10 +35,36 @@
           <span class="setting setting-functions" style="display:none;">functions</span>
           <span class="setting setting-plottype"></span>
           <span class="setting setting-dashboards">dashboards</span>
+          <span class="setting setting-theme" title="Toggle dark mode"></span>
           <span class="setting setting-mainmenu">&equiv;</span>
         </div>
       </header>
       <div class="graph-group"></div>
     </div>
+    <script>
+      (function () {
+        var btn = document.querySelector(".setting-theme");
+        if (!btn) return;
+        function read() {
+          try { return localStorage.getItem("zagTheme") === "dark" ? "dark" : "light"; }
+          catch (e) { return "light"; }
+        }
+        function apply(theme) {
+          if (theme === "dark") {
+            document.documentElement.setAttribute("data-theme", "dark");
+          } else {
+            document.documentElement.removeAttribute("data-theme");
+          }
+          btn.textContent = theme === "dark" ? "☼" : "☾";
+          btn.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+        }
+        apply(read());
+        btn.addEventListener("click", function () {
+          var next = read() === "dark" ? "light" : "dark";
+          try { localStorage.setItem("zagTheme", next); } catch (e) {}
+          apply(next);
+        });
+      })();
+    </script>
   </body>
 </html>

@@ -1,0 +1,135 @@
+@import "nib"
+@import "./mixins"
+
+// Dark theme overrides. Activated by setting data-theme="dark" on <html>.
+// Layered on top of the default (light) styles so the existing build pipeline
+// in app/index.js continues to emit a single index.css.
+
+dark-bg            = #1e1e1e
+dark-bg-soft       = #242424
+dark-bg-elevated   = #2a2a2a
+dark-bg-hover      = #303030
+dark-fg            = #ddd
+dark-fg-muted      = #aaa
+dark-border        = #3a3a3a
+dark-border-strong = #4a4a4a
+dark-input-bg      = #1a1a1a
+dark-anchor        = #4ea1ff
+dark-danger        = #ff6b6b
+
+html[data-theme="dark"]
+  body
+    background dark-bg
+    color dark-fg
+
+  a
+    color dark-anchor
+
+  // Form controls
+  input[type="text"]
+    background dark-input-bg
+    border-color dark-border
+    color dark-fg
+  select
+    background dark-bg-elevated
+    border-color dark-border
+    color dark-fg
+  button, input[type="submit"], a.button
+    background linear-gradient(top, dark-bg-elevated, dark-bg-soft)
+    border-color dark-border
+    color dark-fg
+    &:hover
+      background dark-bg-hover
+
+  // Header / filter / settings strip
+  .stats-filter, .stats-header
+    background dark-bg-soft
+    border-bottom-color dark-border
+  .sidebar
+    background dark-bg
+    border-right-color dark-border
+  input.stats-filter-input
+    background dark-input-bg
+    color dark-fg
+
+  // Settings buttons
+  .setting
+    border-color dark-border
+    color dark-fg
+    &.current
+      background dark-bg-elevated
+      box-shadow 0px 1px 0px dark-bg-elevated
+  .setting-togglesidebar
+    color dark-fg-muted
+  .setting-popup
+    background dark-bg-elevated
+    color dark-fg
+    box-shadow 0px 1px 1px rgba(black, 0.6)
+
+  // Graph area
+  .graph-group
+    background dark-bg
+
+  // Tree (left sidebar metrics list)
+  .tree-parent
+    color dark-fg-muted
+    &::before
+      background dark-bg-soft
+      border-bottom-color dark-border
+      border-top-color dark-border
+  .tree-leaf-current
+    > .tree-expander, > .tree-leaf-label
+      color white
+
+  // Hover labels on charts
+  .hover-label
+    background dark-bg-elevated
+    border-color dark-border-strong
+    color dark-fg
+  .hover-circle
+    background dark-bg
+    border-color dark-fg
+  .hover-mark-rect
+    box-shadow 0px 0px 0px 1px dark-bg
+
+  // Axis ticks/lines
+  .axis-line
+    background dark-fg-muted
+  .axis-x-tick-text, .axis-y-tick-text
+    color dark-fg-muted
+
+  // Tag markers
+  .tag-current-label
+    color dark-fg
+
+  // Dialogs
+  .dialog
+    background dark-bg-elevated
+    border-color dark-border-strong
+    box-shadow 0px 0px 0px 6px rgba(black, 0.6)
+  .dialog-header
+    border-bottom-color dark-border
+  .dialog-header-text
+    color dark-fg
+  .dialog-close
+    border-left-color dark-border
+    color dark-fg-muted
+    &:hover
+      color dark-danger
+  .dialog-footer::before
+    border-top-color dark-border
+
+  // Scrollbars
+  .tree, .graph-group
+    &::-webkit-scrollbar-thumb
+      background dark-border-strong
+      &:hover
+        background dark-fg-muted
+    &::-webkit-scrollbar-track
+      background dark-bg
+      box-shadow inset 0px 0px 1px rgba(black, 0.6)
+
+// Theme toggle button — same shape as other .setting items in either theme.
+.setting-theme
+  font-size 14px
+  padding 6px 12px
