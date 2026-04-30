@@ -130,6 +130,10 @@ html[data-theme="dark"]
       box-shadow inset 0px 0px 1px rgba(black, 0.6)
 
 // Theme toggle button — same shape as other .setting items in either theme.
-.setting-theme
+// Class is `theme-toggle` (not `setting-theme`) so SettingsView's
+// /\bsetting-([\w-]+)\b/ regex in client/js/ui/settings.js does NOT match.
+// Matching that regex would route the click to toggle(type) and crash on
+// this.buttons[type] = undefined.
+.theme-toggle
   font-size 14px
   padding 6px 12px

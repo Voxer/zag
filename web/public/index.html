@@ -35,7 +35,7 @@
           <span class="setting setting-functions" style="display:none;">functions</span>
           <span class="setting setting-plottype"></span>
           <span class="setting setting-dashboards">dashboards</span>
-          <span class="setting setting-theme" title="Toggle dark mode"></span>
+          <span class="setting theme-toggle" title="Toggle dark mode"></span>
           <span class="setting setting-mainmenu">&equiv;</span>
         </div>
       </header>
@@ -43,7 +43,7 @@
     </div>
     <script>
       (function () {
-        var btn = document.querySelector(".setting-theme");
+        var btn = document.querySelector(".theme-toggle");
         if (!btn) return;
         function read() {
           try { return localStorage.getItem("zagTheme") === "dark" ? "dark" : "light"; }
