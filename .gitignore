@@ -1,0 +1,5 @@
+web/package-lock.json
+web/node_modules
+daemon/node_modules
+agent/node_modules
+backend-pg/node_modules
