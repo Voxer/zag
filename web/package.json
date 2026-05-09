@@ -1,26 +1,44 @@
 {
-  "name": "zag",
-  "version": "0.1.3",
-  "author": "sentientwaffle",
-  "description": "graph metrics",
+  "name": "@patrick.kokou/zag",
+  "version": "0.2.1",
+  "author": "Patrick Kokou",
+  "license": "MIT",
+  "description": "Web frontend for the Zag metrics graphing system",
   "main": "index.js",
   "scripts": {
     "test": "tap $(find test -name '*.test.js' | sort)"
   },
   "bin": {
-    "zag-admin": "./bin/admin.js"
+    "zag-admin": "bin/admin.js"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "bin/",
+    "app/",
+    "client/",
+    "public/",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/voxer/zag.git"
+    "url": "git+https://github.com/voxer/zag.git",
+    "directory": "web"
   },
   "homepage": "https://github.com/voxer/zag",
+  "bugs": {
+    "url": "https://github.com/voxer/zag/issues"
+  },
   "dependencies": {
     "stylus": "~0.27.1",
     "nib": "~0.5.0",
     "st": "~3.0.2",
-    "browserify": "~13.0.0",
-    "lodash": "~4.17.21",
+    "lodash": "^4.18.1",
+    "browserify": "^17.0.1",
     "d3": "~3.5.11",
     "routes": "~0.2.0",
     "uglify-js": "3.3.18",
@@ -39,6 +57,8 @@
   "keywords": [
     "zag",
     "metrics",
-    "graphs"
+    "graphs",
+    "monitoring",
+    "dashboard"
   ]
 }
