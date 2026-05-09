@@ -56,12 +56,9 @@ function MetricsWeb(options) {
 
   // Generate assets.
   buildCSS(path.join(stylusDir, "index.styl"), function(err, css) {
-    if (err) {
-      console.log(err)
-      return
-    }
+    if (err) return _this.onError(err)
     fs.writeFile(path.join(publicDir, "index.css"), css, function(err) {
-      if (err) console.log(err)
+      if (err) _this.onError(err)
     })
     buildJS(publicDir, options.env === "prod", function() {
       var addrport = options.host.split(":")
