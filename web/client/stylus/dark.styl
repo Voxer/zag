@@ -16,6 +16,7 @@ dark-border-strong = #4a4a4a
 dark-input-bg      = #1a1a1a
 dark-anchor        = #4ea1ff
 dark-danger        = #ff6b6b
+dark-bg-selected   = #4a4a4a
 
 html[data-theme="dark"]
   body
@@ -78,6 +79,9 @@ html[data-theme="dark"]
       border-bottom-color dark-border
       border-top-color dark-border
   .tree-leaf-current
+    background dark-bg-selected
+    &::before
+      background transparent
     > .tree-expander, > .tree-leaf-label
       color white
 
