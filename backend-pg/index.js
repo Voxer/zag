@@ -6,6 +6,28 @@ const reDup    = /^duplicate key value/
   , reExists = /already exists/
   , INT8OID = 20
   , FLOAT8OID = 1022
+  , CONNECTION_TIMEOUT_MS = 10000
+
+// pg@8 removed the per-Client setTypeParser method that v3-v7 exposed.
+// Register the parsers globally at module load so INT8/FLOAT8 columns are
+// returned as JS numbers (preserves the legacy behavior zag-daemon relies on
+// when aggregating counts/bigints).
+pg.types.setTypeParser(INT8OID, parseNumber)
+pg.types.setTypeParser(FLOAT8OID, parseNumber)
+
+function parseNumber(val) {
+  if (val) return parseFloat(val)
+}
+
+// Legacy callers (e.g. zag-daemon configured from voxer config.json) pass
+// connection strings of the form "tcp://user:pass@host/db". pg-connection-string
+// (used by pg@7+) does not recognize the "tcp://" scheme and silently falls back
+// to defaults (localhost + no auth), which fails closed without a clear error.
+// Normalize to the canonical scheme so the parse is unambiguous.
+function normalizeConnectionString(url) {
+  if (typeof url !== 'string') return url
+  return url.replace(/^tcp:\/\//, 'postgresql://')
+}
 
 const setup =
   [ "CREATE TABLE $env_metrics_keys ("
@@ -98,11 +120,10 @@ function PostgresBackend(options) {
   this._onPointInsert = function(err) { _this.onPointInsert(err) }
 }
 
-PostgresBackend.prototype.numberTypeParser = function (val) {
-  if (val) {
-    return parseFloat(val);
-  }
-}
+// Kept for backward compatibility with any external caller that used the v1
+// instance method. New code should rely on the global pg.types registration
+// above; this is a thin alias so the contract is unchanged.
+PostgresBackend.prototype.numberTypeParser = parseNumber
 
 PostgresBackend.prototype.close = function() { this.client.end() }
 
@@ -421,16 +442,31 @@ PostgresBackend.prototype.query = function(sql, params, callback) {
 
 PostgresBackend.prototype.reconnect = function() {
   var isReconnect = !!this.client
-  if (this.client) this.client.end()
-  this.client = new pg.Client(this.url)
-  this.client.setTypeParser(INT8OID, this.numberTypeParser);
-  this.client.setTypeParser(FLOAT8OID, this.numberTypeParser);
+  if (this.client) {
+    // pg@8 Client#end returns a Promise; swallow tear-down errors so a stale
+    // socket can't mask the new connect error below.
+    try { Promise.resolve(this.client.end()).catch(noop) } catch (_) {}
+  }
+  this.client = new pg.Client({
+    connectionString: normalizeConnectionString(this.url),
+    // Without this, pg@8 will block forever on a half-open TCP socket (e.g.
+    // a transient Cloud SQL stall) and zag-daemon will silently no-op every
+    // savePoints flush. Bound the wait so connect failures surface loudly via
+    // the error handler instead of looking like a healthy idle client.
+    connectionTimeoutMillis: CONNECTION_TIMEOUT_MS
+  })
   this.client.on("error", this.onConnectionError.bind(this))
 
   var _this = this
   this.client.connect(function(err) {
     if (err) {
-      if (!isReconnect) throw err
+      if (!isReconnect) {
+        // Surface the failure to the configured error handler so the caller
+        // can log it; then fall through into the reconnect retry loop. Throwing
+        // here (the v1 behavior) crashes the daemon hard before any retry can
+        // run, which made transient startup races unrecoverable.
+        _this.onError(err)
+      }
       setTimeout(_this.reconnect.bind(_this), 1000)
     }
   })
