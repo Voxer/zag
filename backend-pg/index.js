@@ -88,7 +88,9 @@ function PostgresBackend(options) {
   this._onPointInsert = function(err) { _this.onPointInsert(err) }
 }
 
-PostgresBackend.prototype.close = function() { this.client.end() }
+PostgresBackend.prototype.close = function() {
+  try { Promise.resolve(this.client.end()).catch(noop) } catch (_) {}
+}
 
 PostgresBackend.prototype.setup = function(callback) {
   var _this = this
@@ -185,7 +187,7 @@ PostgresBackend.prototype.savePoint = function(mkey, pt, callback) {
     , done  = callback || this._onPointInsert
   this.query
   ( "UPDATE " + _this.tData + " "
-  + "SET data=trim(trailing ']' from data) || $1"
+  + "SET data=trim(trailing ']' from data) || $1 "
   + "WHERE metrics_key=$2 AND time_start=$3",
   [", " + JSON.stringify(pt) + "]", mkey, chunk], function (err, result) {
     // if there is an error or we have updated a row then move on
