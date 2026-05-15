@@ -1,8 +1,8 @@
 {
-  "name": "zag-backend-pg",
-  "version": "1.0.0",
-  "author": "sentientwaffle",
-  "description": "postgres backend for zag metrics",
+  "name": "@patrick.kokou/zag-backend-pg",
+  "version": "2.0.2",
+  "author": "sentientwaffle, Patrick Kokou",
+  "description": "postgres backend for zag metrics — pinned to the legacy 0.0.7 schema (prod_metrics_data with metrics_key/time_start/data) on pg@^8 for Node 18+ compatibility",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,7 +16,10 @@
     "zag",
     "metrics"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "pg": "7.4.1"
+    "pg": "^8.13.0"
   }
 }
