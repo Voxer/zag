@@ -131,7 +131,7 @@ PostgresBackend.prototype.getPoints = function(mkey, start, end, callback) {
     if (err) return callback(err)
     var rows   = res.rows
       , points = []
-    for (var i = 0, off = 0; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
       appendPoints(points, parseRow(rows[i].data), start, end)
     }
     callback(null, points)
