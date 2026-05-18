@@ -1,9 +1,10 @@
-var downCounter   = require('./downsample/counter')
-  , downHistogram = require('./downsample/histogram')
-  , downLLQ       = require('./downsample/llquantize')
-  , flattenLLQ    = require('./flatten-llq')
-  , Interval      = require('./interval')
-  , reLLQ         = /@llq$/
+var downCounter        = require('./downsample/counter')
+  , downHistogram      = require('./downsample/histogram')
+  , downLLQ            = require('./downsample/llquantize')
+  , flattenLLQ         = require('./flatten-llq')
+  , Interval           = require('./interval')
+  , mergeLLQPercentiles = require('./llq-percentiles')
+  , reLLQ              = /@llq$/
 
 module.exports = MetricsLoader
 
@@ -69,6 +70,7 @@ MetricsLoader.prototype.load = function(key, options, callback) {
   var delta = options.delta
     , start = floor(options.start, delta)
     , end   = floor(options.end, delta) // add a delta to be inclusive
+    , _this = this
 
   // Don't cache unless its a level.
   if (!~this.levels.indexOf(delta)) {
@@ -78,7 +80,36 @@ MetricsLoader.prototype.load = function(key, options, callback) {
   this.loadIntervals(key, options, [new Interval(start, end)], function(err, points, type) {
     if (err)                   return callback(err)
     if (type === "llquantize") return callback(null, flattenLLQ(points), type)
+    if (type === "histogram" && delta > _this.minLevel) {
+      // Percentiles in the histogram downsampler are unrecoverable from
+      // scalar per-bucket values; source them from the `@llq` companion.
+      // See web/app/metrics/downsample/histogram.js for the math rationale.
+      return _this.loadHistogramPercentiles(key, options, points, callback)
+    }
     callback(null, points, type)
+  })
+}
+
+// Fetch the `@llq` companion for a histogram series at the same delta, walk
+// its frequency tables into per-timestamp percentile estimates, and patch the
+// histogram points in place. On any error the histogram points are returned
+// unmodified — percentile gaps are preferable to a failed read.
+MetricsLoader.prototype.loadHistogramPercentiles = function(key, options, histPoints, callback) {
+  var delta = options.delta
+    , start = floor(options.start, delta)
+    , end   = floor(options.end, delta)
+    , llqOpts =
+      { delta:    delta
+      , start:    options.start
+      , end:      options.end
+      , nocacheR: options.nocacheR
+      , nocacheW: options.nocacheW
+      , abnormal: options.abnormal
+      }
+  this.loadIntervals(key + "@llq", llqOpts, [new Interval(start, end)], function(err, llqPoints) {
+    if (err || !llqPoints) return callback(null, histPoints, "histogram")
+    mergeLLQPercentiles(histPoints, llqPoints)
+    callback(null, histPoints, "histogram")
   })
 }
 

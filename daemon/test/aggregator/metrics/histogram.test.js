@@ -18,6 +18,7 @@ test("Histogram#push, Histogram#toJSON", function(t) {
     , max:     1
     , mean:    0.5
     , std_dev: 0.5
+    , m2:      0.5
     , p10:     0
     , median:  0.5
     , p75:     1
@@ -30,7 +31,9 @@ test("Histogram#push, Histogram#toJSON", function(t) {
 test("Histogram#push one", function(t) {
   var h = new Histogram()
   h.push(5)
-  t.equals(h.toJSON(123).std_dev, 0)
+  var pt = h.toJSON(123)
+  t.equals(pt.std_dev, 0)
+  t.equals(pt.m2, 0)
   t.end()
 })
 
