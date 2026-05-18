@@ -1,8 +1,5 @@
 var IntervalLoader  = require('./interval-loader')
   , RateLimit       = require('./rate-limit')
-  , MetricsFunction = require('./metrics-function')
-  , parseMKey       = require('../../../lib/mkey')
-  , isFn            = parseMKey.isFunction
   , qs              = sail.parseQuery(document.location.search)
   , EventEmitter    = require('events').EventEmitter
   , inherits        = require('util').inherits
@@ -46,43 +43,15 @@ PointLoader.prototype.onChange = function() {
 // start - Integer timestamp
 // end   - Integer timestamp
 // callback(fail, json)
+//
+// Function-keys (`{rate(...)}`) take this same path — the server evaluates
+// them transparently in MetricsLoader (web/app/metrics/function/index.js).
+// Encoded as a regular URL key, no client-side decomposition.
 PointLoader.prototype.load = function(iKey, start, end, callback) {
   var split = iKey.split("#")
     , mkey  = split[0]
     , delta = split[1]
-
-  if (isFn(mkey)) {
-    this.loadFunction(MetricsFunction.get(mkey), delta, start, end, callback)
-  } else {
-    this.get(mkey, delta, start, end, callback)
-  }
-}
-
-// TODO finish functions
-//
-// mfn   - MetricsFunction
-// delta - String
-// start - Integer timestamp
-// end   - Integer timestamp
-// callback(fail, points)
-PointLoader.prototype.loadFunction = function(mfn, delta, start, end, callback) {
-  var args        = mfn.args
-    , remaining   = args.length
-    , pointsByKey = {} // { mkey : points }
-    , err
-  args.forEach(function(fullkey) {
-    var mkey = parseMKey(fullkey)
-    this.get(mkey.key, delta, start, end, function(fail, points) {
-      if (fail) err = fail
-      else pointsByKey[mkey.key] = points
-      if (--remaining === 0) done()
-    })
-  }, this)
-
-  function done() {
-    if (err) return callback(err)
-    callback(null, mfn.process(pointsByKey))
-  }
+  this.get(mkey, delta, start, end, callback)
 }
 
 // mkey  - String

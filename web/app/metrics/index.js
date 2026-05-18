@@ -4,6 +4,8 @@ var downCounter        = require('./downsample/counter')
   , flattenLLQ         = require('./flatten-llq')
   , Interval           = require('./interval')
   , mergeLLQPercentiles = require('./llq-percentiles')
+  , evalFunction       = require('./function')
+  , parseMKey          = require('../../lib/mkey')
   , reLLQ              = /@llq$/
 
 module.exports = MetricsLoader
@@ -67,6 +69,14 @@ MetricsLoader.resolveType = resolveType
 //   `points` is an Array of Object.
 //
 MetricsLoader.prototype.load = function(key, options, callback) {
+  // Phase 2: function-keys are evaluated against derived-series operators.
+  // The evaluator calls back into this same load() for each raw-key
+  // dependency, so the normal Interval/LLQ/cache machinery still runs for
+  // the underlying series.
+  if (parseMKey.isFunction(key)) {
+    return evalFunction(this, key, options, callback)
+  }
+
   var delta = options.delta
     , start = floor(options.start, delta)
     , end   = floor(options.end, delta) // add a delta to be inclusive
