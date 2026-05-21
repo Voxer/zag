@@ -157,7 +157,7 @@ Chart editor (post-foundation): a "+" button to add a derived series; form for p
 
 - **`check_ring_consensus` Nagios plugin** — small custom plugin in `chef-repo/cookbooks/nagios/files/default/nagios-plugins/`, modelled on `check_metrics_threshold`. Polls `/checksum` on every zag daemon; alerts CRITICAL on unreachable members or disagreeing hashes. Sub-minute split-brain detection.
 - **Member list from a Chef attribute** (consistent with the topology-from-Chef decision) — the source of truth for "who *should* be in the ring."
-- **Ships without touching zag** — the `/checksum` endpoint already exists (`ring/index.js:582-588`); we're consuming it.
+- **Read-only `/members` endpoints added** (alongside `/checksum`) so the check can diff live gossip membership against the static Poolee config (`hs_ring.json` etc.) — the gossip-vs-static phantom detector. On `Voxer/server` branch `jsheehy/ring-members` (classic `ring/ring.js` + `precious/basic_ring.js`); zag daemon ring (`daemon/lib/ring/index.js`) still TODO. Revises the earlier checksum-only / "no zag changes" assumption.
 - **Catches both failure modes in one check:** unreachable node (the `0049` SSH-timeout pattern) and reachable-but-disagreeing nodes (the `0064` split-brain that caused the GCM incident).
 - **Follow-up (later):** per-daemon `ingest-rate` metric, emitted from each zag daemon — would have screamed instantly when `ms16` owned 6% of keyspace and ingested zero.
 
@@ -174,6 +174,7 @@ Chart editor (post-foundation): a "+" button to add a derived series; form for p
 
 - **Branch `jsheehy/zag-changes-1`** — small client-side `clampDelta` UI bugfix (`web/client/js/models/point-loader.js`). Currently uncommitted. Independent of the main work; ship whenever.
 - **[`DASHBOARD_MODERNIZATION.md`](./DASHBOARD_MODERNIZATION.md)** — sibling task brief for the dashboard portion of Workstream A. A different session is handling that.
+- **`Voxer/server` branches** — `jsheehy/ring-members` (the `/members` endpoints above) and `jsheehy/fix-node-idle-flag` (drops an obsolete `--nouse-idle-notification` flag that crash-loops services on modern Node / FreeBSD 14; gcp2 stage pinned to Node 8 meanwhile). Both pushed.
 - **Project memory** at `/Users/john/.claude/projects/-Users-john-code-voxer-zag/memory/` — captures the broader plan, the 2014 monitor-failure finding, and collaboration notes.
 
 ---
