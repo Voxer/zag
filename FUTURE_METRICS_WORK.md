@@ -199,3 +199,30 @@ Chart editor (post-foundation): a "+" button to add a derived series; form for p
 - Touch the dormant `RuleBuilder` (`daemon/lib/monitor/rule-builder.js`). That's the 2014 failure. Workstream B uses `RuleTester` only.
 - Build a rules UI. Thresholds stay in Chef per the meeting decision.
 - Move work on the dashboard UI — that's `DASHBOARD_MODERNIZATION.md`, handled separately.
+
+---
+
+## Staging deployment & verification (gcp2-stage-00)
+
+The box runs voxer_server (incl. the `mw`/`ms` zag services) under **Node 8**. Getting a clean install to run surfaced a few real gotchas — capture for next time:
+
+**What went wrong (Node 8 throughout):**
+
+- A fresh `npm install` pulls a **modern `xml-crypto`** that uses ES2020 syntax (`?.`, `??`) which Node 8 can't parse → services crash with `SyntaxError: Unexpected token .`. Fix: run `cookbooks/server/files/default/patch-xml-crypto.sh /voxer/deploy/server` after install (it rewrites the ES2020 syntax out). This is the main trap.
+- Native addons (`sse4_crc32`, `bcrypt`, `heapdump`) must compile under Node 8. Run the install as **`voxer`** with `HOME=/voxer/deploy/server` (running as root mis-de-escalates child processes and hits cache-permission errors). A stale npm cache can make `npm install` skip the native build entirely — `npm cache clean --force` first, or `npm rebuild`, so they build in dependency order. (Toolchain on the box is fine: Node 8 + `python2.7` set via `npm config python`.)
+- chef's `npm install` is **clone-gated** (`action :nothing`, only notified by the git clone, which has `not_if dir exists`). So updating an *existing* `/voxer/deploy/server` checkout does NOT reinstall — you must `npm install` + patch manually.
+- `mw` binds the **internal IP** (`192.168.255.54:10400`, from its `listen` config), not localhost — test against the internal IP / `gcp2-stage-00-internal.voxer.com`, not `127.0.0.1`.
+
+**Recommendations for future installs:**
+
+1. Commit an **`npm-shrinkwrap.json`** to voxer_server pinning Node-8-compatible versions — stops `npm install` drifting forward into ES2020 land and re-breaking on every deploy.
+2. **Wire `patch-xml-crypto.sh` into the chef server recipe** (it's currently a manual-only helper nothing invokes), plus an `npm cache clean --force` (or `npm rebuild`) step — so a fresh clone produces a working tree without hand-holding.
+
+---
+
+## Next session (server repo)
+
+Picking up in the voxer_server repo:
+
+1. **`/members` endpoint** — test/finish the members endpoint work.
+2. **Verify Phase 2 zag on staging** — exercise the derived-series function-keys (`{rate(...)}`, `{zscore(...)}`) against a real backend. Note: staging currently runs **stock `zag@0.1.1`**, not the Phase 1/2 changes (committed on `jsheehy/zag-changes-1`, green on 348 tests). To test them, link the three zag packages into voxer_server **as `voxer` under Node 8** (the `web/package.json` name is `@patrick.kokou/zag`, so the global symlink for the unscoped `zag` name has to be created manually).
