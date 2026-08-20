@@ -31,6 +31,7 @@ var OPERATORS =
   { rate:           true
   , delta:          true
   , rolling_mean:   true
+  , rolling_sum:    true
   , rolling_stddev: true
   , zscore:         true
   , ratio:          true

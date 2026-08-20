@@ -37,6 +37,26 @@ test("ratio of two keys", function(t) {
   t.end()
 })
 
+test("ratio of two rolling_sums (the pbr failure-rate key shape)", function(t) {
+  t.deepEquals(
+    parse("{ratio(rolling_sum(pbr>validate_purchase|ios|fail,1800000)," +
+          "rolling_sum(pbr>validate_purchase|ios|success,1800000))}"),
+    { type: "call", op: "ratio", args:
+      [ { type: "call", op: "rolling_sum", args:
+          [ { type: "key", key: "pbr>validate_purchase|ios|fail", subkey: null }
+          , { type: "number", value: 1800000 }
+          ]
+        }
+      , { type: "call", op: "rolling_sum", args:
+          [ { type: "key", key: "pbr>validate_purchase|ios|success", subkey: null }
+          , { type: "number", value: 1800000 }
+          ]
+        }
+      ]
+    })
+  t.end()
+})
+
 test("nested call", function(t) {
   t.deepEquals(parse("{zscore(rate(requests), 3600000)}"),
     { type: "call", op: "zscore", args:

@@ -16,6 +16,7 @@ var ARITY =
   { rate:           1
   , delta:          2
   , rolling_mean:   2
+  , rolling_sum:    2
   , rolling_stddev: 2
   , zscore:         2
   , ratio:          2
@@ -25,6 +26,7 @@ var OPS =
   { rate:           rate
   , delta:          deltaOp
   , rolling_mean:   rolling_mean
+  , rolling_sum:    rolling_sum
   , rolling_stddev: rolling_stddev
   , zscore:         zscore
   , ratio:          ratio
@@ -81,6 +83,29 @@ function rolling_mean(series, windowMs, delta) {
       if (!slice[j].empty) { sum += slice[j].value; count++ }
     }
     return count === 0 ? null : sum / count
+  })
+}
+
+// rolling_sum(series, windowMs, delta) — sum of the last N points (inclusive).
+// Empty for the leading N-1 points (window not positionally filled), but a
+// FILLED window with no data sums to 0 — not empty. For a counter, "no events
+// this window" is a real zero, unlike a mean, which is genuinely undefined; so
+// rolling_sum diverges from rolling_mean exactly on the all-empty window.
+//
+// This distinction is why `ratio(rolling_sum(fail), rolling_sum(success))` is
+// the volume-weighted failure rate, whereas `ratio(rolling_mean(...), ...)` is
+// not: sums keep the same implicit denominator (the window) on both arms, so
+// sparse fail vs dense success no longer skews the ratio the way per-present-
+// minute means do — and a total success-blackout reads as fail/(fail+0) = 100%
+// rather than collapsing to empty (which a threshold check would read as OK).
+function rolling_sum(series, windowMs, delta) {
+  var n = Math.max(1, stepsFor(windowMs, delta))
+  return windowedReduce(series, n, function(slice) {
+    var sum = 0
+    for (var j = 0; j < slice.length; j++) {
+      if (!slice[j].empty) sum += slice[j].value
+    }
+    return sum // never null: an all-empty filled window is a real 0
   })
 }
 
@@ -181,6 +206,7 @@ function ownLookback(node, delta) {
     case "rate":           return delta
     case "delta":          return numArg(node, 1, 0)
     case "rolling_mean":   return numArg(node, 1, 0)
+    case "rolling_sum":    return numArg(node, 1, 0)
     case "rolling_stddev": return numArg(node, 1, 0)
     case "zscore":         return numArg(node, 1, 0)
     case "ratio":          return 0
