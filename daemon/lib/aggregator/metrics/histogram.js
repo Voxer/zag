@@ -9,11 +9,15 @@ Histogram.prototype.push = function(val) { this.hist.update(val) }
 Histogram.prototype.toJSON = function(ts) {
   var hist        = this.hist
     , percentiles = hist.percentiles([0.1, 0.5, 0.75, 0.95, 0.99])
+  // M2 = sum of squared deviations from the mean (Welford's `varianceS`).
+  // Additive across buckets under Chan's parallel-variance algorithm, which
+  // the web tier uses to combine per-minute points into wider deltas.
   return { ts:      ts
          , count:   hist.count
          , max:     hist.max
          , mean:    r(hist.mean())
          , std_dev: r(hist.stdDev()) || 0
+         , m2:      r(hist.varianceS) || 0
          , p10:     r(percentiles[0.1])
          , median:  r(percentiles[0.5])
          , p75:     r(percentiles[0.75])

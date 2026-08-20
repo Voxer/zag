@@ -157,7 +157,6 @@ PointEmitter.prototype.getKeys = function() {
 // Returns [String "<mkey>#<delta>"]
 PointEmitter.prototype.getLoaderKeys = function() {
   var keys  = this.getKeys()
-    , delta = this.delta
     , lKeys = []
   for (var i = 0; i < keys.length; i++) {
     lKeys.push(this.loaderKey(keys[i]))
@@ -167,8 +166,14 @@ PointEmitter.prototype.getLoaderKeys = function() {
 
 // mkey - String
 // Returns String "<mkey>#<delta>"
+//
+// The delta is clamped to the visible window (see clampDelta). Clamping *here* —
+// at the one place the loader/cache key is built — keeps the cache key and the
+// fetched resolution in agreement: an iKey always identifies data at exactly the
+// resolution it was fetched at. loadAll (fetch), the IntervalLoader cache, and
+// getData (read) all funnel through this method, so they can never disagree.
 PointEmitter.prototype.loaderKey = function(mkey) {
-  return loaderKey(mkey, this.delta)
+  return loaderKey(mkey, clampDelta(this.delta, this.start, this.end))
 }
 
 ///
@@ -199,3 +204,18 @@ function isLiveDelta(delta) { return delta < 60000 }
 //
 // Returns "<key>[@llq]#<delta>"
 function loaderKey(mkey, delta) { return mkey + "#" + delta }
+
+// Clamp delta so at least 2 buckets fit in the window.
+// A delta wider than the window forces the loader to assemble buckets from data
+// outside the visible range (see web/app/metrics/index.js), which is slow and
+// yields near-empty results. Floor of 60_000 = 1m, the minimum stored bucket
+// size — so a window under 2m can never reach 2 full buckets and 1m is the best
+// resolution available there.
+//
+// Exposed on PointEmitter for testing.
+PointEmitter.clampDelta = clampDelta
+function clampDelta(delta, start, end) {
+  var d   = Number(delta)
+    , max = Math.floor((end - start) / 2)
+  return d <= max ? d : Math.max(60000, max)
+}

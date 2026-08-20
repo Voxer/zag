@@ -162,13 +162,67 @@ test("MetricsLoader#load histogram, delta>1", function(t) {
   var ml = new MetricsLoader(loadPoints, writePoints, [1, 2, 5])
   ml.load("keyH", {start: 1, end: 2, delta: 2}, function(err, points, type) {
     if (err) throw err
+    // keyH fixture: uniform mean=5, max=5, m2=0 ⇒ pooled downsampler collapses
+    // each delta=2 bucket to mean=5, m2=0, std_dev=0 with summed counts.
+    // Percentiles come from the keyH@llq companion:
+    //   ts=0 bucket: data={1:2, 2:3}, total=5 ⇒ p10=1, median..p99=2
+    //   ts=2 bucket: data={3:4, 4:5}, total=9 ⇒ p10=3, median..p99=4
     t.deepEquals(points,
-      [ makeHistogram(0, 1, 17, 2)
-      , makeHistogram(2, 5, 13, 6)
+      [ { ts: 0, count: 17, mean: 5, m2: 0, max: 5, std_dev: 0
+        , p10: 1, median: 2, p75: 2, p95: 2, p99: 2 }
+      , { ts: 2, count: 13, mean: 5, m2: 0, max: 5, std_dev: 0
+        , p10: 3, median: 4, p75: 4, p95: 4, p99: 4 }
       ])
     t.equals(type, "histogram");
     t.end()
   })
+})
+
+test("MetricsLoader#load histogram, delta=minLevel skips LLQ merge", function(t) {
+  // At minLevel the downsampler isn't called; per-minute points keep their
+  // original (correct) percentile values and the LLQ merge is bypassed.
+  var ml = new MetricsLoader(loadPoints, writePoints, [1, 2, 5])
+  ml.load("keyH", {start: 1, end: 2, delta: 1}, function(err, points, type) {
+    if (err) throw err
+    t.equals(type, "histogram")
+    t.equals(points.length, 2)
+    // The fixture per-minute points carry no percentile fields (post-Phase-1
+    // makeHistogram defaults). The merge path would have added them; assert
+    // it didn't fire.
+    t.equals(points[0].p95, undefined)
+    t.end()
+  })
+})
+
+test("MetricsLoader#load histogram, delta>1, no @llq companion", function(t) {
+  // When the @llq companion is missing (older deployments / pure-histogram
+  // legacy data), the loader returns histogram points unmodified — gaps in
+  // percentile coverage are preferable to a failed read.
+  var ml = new MetricsLoader(loadHistOnly, writePoints, [1, 2, 5])
+  ml.load("keyOrphan", {start: 1, end: 2, delta: 2}, function(err, points, type) {
+    if (err) throw err
+    t.equals(type, "histogram")
+    t.equals(points.length, 2)
+    t.equals(points[0].p95, undefined)
+    t.end()
+  })
+
+  function loadHistOnly(key, delta, intervals, callback) {
+    if (/@llq$/.test(key)) {
+      return process.nextTick(function() { callback(null, []) })
+    }
+    if (delta !== 1) {
+      return process.nextTick(function() { callback(null, []) })
+    }
+    var pts = []
+    for (var i = 0; i < intervals.length; i++) {
+      var intv = intervals[i]
+      for (var ts = intv.start; ts <= intv.end; ts++) {
+        pts.push(makeHistogram(ts, 3, 7))
+      }
+    }
+    process.nextTick(function() { callback(null, pts) })
+  }
 })
 
 test("MetricsLoader#load llquantize, delta>1", function(t) {
@@ -305,7 +359,7 @@ test("MetricsLoader.identify", function(t) {
   t.equals(ident({}), null)
   t.equals(ident(makeEmpty(45)), null)
   t.equals(ident(makeCounter(45, 4)), "counter")
-  t.equals(ident(makeHistogram(45, 4, 2)), "histogram")
+  t.equals(ident(makeHistogram(45, 2, 4)), "histogram")
   t.equals(ident(makeLLQ(45, {1: 2, 3: 4})), "llquantize")
   t.end()
 })
@@ -333,11 +387,14 @@ var allPoints =
     , makeCounter(6, 1), makeCounter(7,  3), makeCounter(8, 5)
     , makeCounter(9, 7), makeCounter(10, 9), makeCounter(11, 11)
     ]
+  // Uniform mean/max/m2 keeps the loader test focused on plumbing; the
+  // Chan's-algorithm math is exercised in downsample/histogram.test.js.
+  // Signature: makeHistogram(ts, count, mean, opts?)
   , keyH:
-    [ makeHistogram(0,  0, 9), makeHistogram(1,  2, 8), makeHistogram(2,  4, 7)
-    , makeHistogram(3,  6, 6), makeHistogram(4,  8, 5), makeHistogram(5, 10, 4)
-    , makeHistogram(6, 12, 3), makeHistogram(7, 14, 2), makeHistogram(8, 16, 1)
-    , makeHistogram(9, 18, 0)
+    [ makeHistogram(0, 9, 5), makeHistogram(1, 8, 5), makeHistogram(2, 7, 5)
+    , makeHistogram(3, 6, 5), makeHistogram(4, 5, 5), makeHistogram(5, 4, 5)
+    , makeHistogram(6, 3, 5), makeHistogram(7, 2, 5), makeHistogram(8, 1, 5)
+    , makeHistogram(9, 1, 5)
     ]
   , "keyH@llq":
     [ makeLLQ(0, {1: 2}), makeLLQ(1, {2: 3}), makeLLQ(2, {3: 4})
