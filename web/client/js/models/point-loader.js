@@ -55,12 +55,13 @@ PointLoader.prototype.load = function(iKey, start, end, callback) {
 }
 
 // mkey  - String
-// delta - Integer, milliseconds
+// delta - Integer, milliseconds. Already clamped to the window by
+//         PointEmitter#loaderKey (embedded in the iKey), so it is used verbatim
+//         here — the cache key and the fetched resolution always agree.
 // start - Integer
 // end   - Integer
 // callback(fail, json)
 PointLoader.prototype.get = function(mkey, delta, start, end, callback) {
-  delta = clampDelta(delta, start, end)
   var q = sail.toQueryString(
       { start:   start
       , end:     end
@@ -86,15 +87,4 @@ PointLoader.prototype.less = function() {
 
 function sailGet(url, callback) {
   sail.ajax(url, function(fail, body) { callback(fail, body && JSON.parse(body)) })
-}
-
-// Clamp delta so at least 2 buckets fit in the window.
-// A delta wider than the window forces the loader to assemble buckets from
-// data outside the visible range (see web/app/metrics/index.js:107-114), which
-// is slow and yields near-empty results. Floor of 60_000 = 1m, the minimum
-// stored bucket size.
-function clampDelta(delta, start, end) {
-  var d   = Number(delta)
-    , max = Math.floor((end - start) / 2)
-  return d <= max ? d : Math.max(60000, max)
 }
