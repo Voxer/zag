@@ -1,6 +1,6 @@
 {
-  "name": "zag-daemon",
-  "version": "0.0.2",
+  "name": "@patrick.kokou/zag-daemon",
+  "version": "0.0.3",
   "author": "sentientwaffle",
   "description": "aggregate metrics data",
   "main": "index.js",
