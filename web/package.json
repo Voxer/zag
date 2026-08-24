@@ -1,6 +1,6 @@
 {
   "name": "@patrick.kokou/zag",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Patrick Kokou",
   "license": "MIT",
   "description": "Web frontend for the Zag metrics graphing system",
