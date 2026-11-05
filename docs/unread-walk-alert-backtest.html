@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Unread index walk alert: the slowest walk per minute, 10-minute average</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --plane:     #f4f4f1;
+    --surface:   #fcfcfb;
+    --ink:       #14140f;
+    --ink-2:     #52514e;
+    --muted:     #8a8880;
+    --grid:      #e6e5de;
+    --baseline:  #cbcabf;
+    --border:    rgba(11,11,11,0.10);
+    --blue:      #2a78d6;
+    --blue-soft: rgba(42,120,214,0.13);
+    --crit:      #d03b3b;
+    --crit-soft: rgba(208,59,59,0.16);
+    --good:      #0ca30c;
+    --code-num:  #b8690b;
+    --signal:    rgba(216,160,32,0.15);
+    --rug-track: rgba(138,136,128,0.16);
+    --rug-track-solid: #e4e3da;
+    --vol:       #b6b3a8;
+    --vol-soft:  rgba(150,147,133,0.20);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --plane:     #0c0c0b;
+      --surface:   #1a1a19;
+      --ink:       #f5f4ee;
+      --ink-2:     #c3c2b7;
+      --muted:     #8a8880;
+      --grid:      #2b2b28;
+      --baseline:  #3a3a36;
+      --border:    rgba(255,255,255,0.12);
+      --blue:      #3987e5;
+      --blue-soft: rgba(57,135,229,0.17);
+      --crit:      #e05a5a;
+      --crit-soft: rgba(224,90,90,0.20);
+      --good:      #23bf23;
+      --code-num:  #e3a24c;
+      --signal:    rgba(228,176,52,0.14);
+      --rug-track: rgba(150,147,133,0.22);
+      --rug-track-solid: #33332f;
+      --vol:       #6f6d64;
+      --vol-soft:  rgba(120,117,104,0.24);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane:     #0c0c0b;
+    --surface:   #1a1a19;
+    --ink:       #f5f4ee;
+    --ink-2:     #c3c2b7;
+    --muted:     #8a8880;
+    --grid:      #2b2b28;
+    --baseline:  #3a3a36;
+    --border:    rgba(255,255,255,0.12);
+    --blue:      #3987e5;
+    --blue-soft: rgba(57,135,229,0.17);
+    --crit:      #e05a5a;
+    --crit-soft: rgba(224,90,90,0.20);
+    --good:      #23bf23;
+    --code-num:  #e3a24c;
+    --signal:    rgba(228,176,52,0.14);
+    --rug-track: rgba(150,147,133,0.22);
+    --rug-track-solid: #33332f;
+    --vol:       #6f6d64;
+    --vol-soft:  rgba(120,117,104,0.24);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--plane); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 48px 24px 72px; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace; }
+
+  .eyebrow { font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 14px; }
+  h1 { font-size:clamp(28px,4.6vw,42px); font-weight:700; line-height:1.08;
+    letter-spacing:-0.02em; margin:0 0 18px; text-wrap:balance; max-width:26ch; }
+  .lede { font-size:19px; color:var(--ink-2); margin:0; max-width:62ch; }
+  .lede b { color:var(--ink); font-weight:600; }
+
+  .tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:36px 0 44px; }
+  @media (max-width:680px){ .tiles { grid-template-columns:1fr; } }
+  .tile { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .tile .k { font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 12px; }
+  .tile .v { font-size:38px; font-weight:700; line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+  .tile .s { font-size:13.5px; color:var(--ink-2); margin-top:9px; }
+  .v.bad { color:var(--crit); } .v.good { color:var(--good); }
+  .tile .s b { color:var(--ink); font-weight:600; }
+
+  .figure { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px 22px 16px; margin:0; }
+  .figure h2 { font-size:17px; font-weight:600; margin:0 0 3px; letter-spacing:-0.01em; }
+  .figure .cap { font-size:13px; color:var(--muted); margin:0 0 10px; }
+  .chart-scroll { overflow-x:auto; }
+  svg#chart { display:block; width:100%; height:auto; min-width:640px; }
+  .axlab { fill:var(--muted); font-size:11px; font-family:"IBM Plex Mono",monospace; }
+  .guide { fill:var(--crit); font-size:10.5px; font-family:"IBM Plex Mono",monospace; opacity:.8; }
+  .plab  { fill:var(--ink-2); font-size:12px; font-weight:600; }
+  .pcount{ fill:var(--muted); font-size:11px; font-family:"IBM Plex Mono",monospace; }
+
+  .legend { display:flex; flex-wrap:wrap; gap:18px; margin:12px 2px 0; font-size:12.5px; color:var(--ink-2); }
+  .legend span { display:inline-flex; align-items:center; gap:7px; }
+  .swatch { width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .swatch.line { height:3px; border-radius:2px; width:16px; }
+
+  .note { font-size:13.5px; color:var(--ink-2); margin:22px 0 0; max-width:68ch; }
+  .note b { color:var(--ink); font-weight:600; }
+  h3 { font-size:20px; font-weight:700; letter-spacing:-0.01em; margin:48px 0 12px; }
+  p { max-width:68ch; }
+  .reco { background:var(--surface); border:1px solid var(--border); border-radius:12px; margin:16px 0; overflow:hidden; }
+  .reco-head { display:flex; align-items:center; gap:9px; padding:9px 16px 8px; background:var(--plane); border-bottom:1px solid var(--border);
+    font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.02em; }
+  .reco-head::before { content:""; width:9px; height:9px; border-radius:50%; background:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); flex:none; }
+  .reco-head .fname { color:var(--ink-2); }
+  .reco pre { margin:0; padding:15px 18px; overflow-x:auto; }
+  .reco pre .tok-c { color:var(--muted); font-style:italic; }
+  .reco pre .tok-s { color:var(--good); }
+  .reco pre .tok-n { color:var(--code-num); }
+  .reco pre .tok-o { color:var(--blue); font-weight:600; }
+  .reco pre .tok-p { color:var(--ink-2); }
+  pre { font-family:"IBM Plex Mono",monospace; font-size:12.5px; line-height:1.7; margin:14px 0; color:var(--ink); }
+  pre .c { color:var(--muted); } pre .hl { color:var(--blue); font-weight:600; }
+  pre .hlx { color:var(--crit); font-weight:600; }
+
+  .compare { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0; align-items:stretch; }
+  @media (max-width:680px){ .compare { grid-template-columns:1fr; } }
+  .q { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:2px 18px 4px; overflow-x:auto; }
+  .q .q-head { font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; margin:14px 0 0; }
+  .q.old .q-head { color:var(--crit); }
+  .q.new .q-head { color:var(--blue); }
+  .q pre { margin:10px 0 12px; }
+  .q .sub { font-size:12.5px; line-height:1.6; color:var(--ink-2); margin:0 0 12px; max-width:74ch; }
+  .q .sub:first-of-type { margin-top:2px; }
+  .q .sub + .sub { border-top:1px solid var(--border); padding-top:11px; }
+  .q .sub b { color:var(--ink); font-weight:600; }
+  .q .sub .mono { color:var(--ink); }
+  .foot { margin-top:40px; padding-top:18px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); max-width:none; }
+
+  table.exc { border-collapse:collapse; width:100%; font-size:13px; font-variant-numeric:tabular-nums; }
+  table.exc th { text-align:left; font-family:"IBM Plex Mono",monospace; font-size:11px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500;
+    padding:8px 14px 8px 0; border-bottom:1px solid var(--border); }
+  table.exc td { padding:7px 14px 7px 0; border-bottom:1px solid var(--grid); color:var(--ink-2); }
+  table.exc td.mono { font-family:"IBM Plex Mono",monospace; color:var(--ink); }
+  table.exc tr:last-child td { border-bottom:none; }
+  .fire { color:var(--crit); font-weight:600; }
+  .ok { color:var(--good); font-weight:600; }
+
+  .tt { position:fixed; pointer-events:none; z-index:20; opacity:0; transition:opacity .08s;
+    background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 11px;
+    font-size:12.5px; box-shadow:0 8px 24px rgba(0,0,0,.18); font-variant-numeric:tabular-nums; min-width:158px; }
+  .tt .d { font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted); margin-bottom:7px; }
+  .tt .r { display:flex; justify-content:space-between; gap:16px; line-height:1.7; }
+  .tt .r b { font-weight:600; }
+  .tt .fire { color:var(--crit); font-weight:600; }
+  .tt .ok { color:var(--good); font-weight:600; }
+  .tt .sig { color:#a97c14; font-weight:600; }
+
+</style>
+</head>
+<body>
+<div class="wrap"><p class="eyebrow">zag alert design · greenfield · function key · #4318 follow-up</p><h1>Unread index walk alert: the slowest walk per minute, 10-minute average</h1><p class="lede">The hs26 outage (fds exhausted every 2–3 days) came from one account's 5,497-page unread index: every mark-as-read walked the whole chain for ~21 s, past the 20 s relay timeout, so the client resent and hs26 walked 98% of the time. #4318 bounds a walk to the pages holding the newest 10,000 unread. This rule averages the slowest walk per minute (histogram <span class="mono">@max</span>) over 10 minutes with zag's function-key evaluator: <b>warn above 5 s, critical above 10 s</b>. The average keeps a loop whose slow walks skip minutes reading high in every check (the raw per-minute max alternates and never gets 5 bad checks in a row) and keeps single slow walks quiet. A fleet-wide failure ratio was rejected: one looping user is ~0.2% of ~1,400 walks a minute. Backtest: the 11-04 loop, and the same loop thinned to every other minute, both stay critical; nothing else would notify. <b>Provisional:</b> under an hour of fleet-wide data on the fix — re-check after a week.</p><div class="tiles"><div class="tile"><p class="k">Proposed rule · hs26 retry loop: user 1's 5,497-page mark-as-read walks, 11-04 3:15-5:20 PM EST</p><div class="v good">+0&thinsp;min</div><p class="s">crit crossed Nov 4 20:15 UTC; hard-CRITICAL ~5–9 min later.</p></div><div class="tile"><p class="k">Would-page events</p><div class="v good">0</div><p class="s">0 more phase-dependent (5–8 min). Outside labeled incidents, 1 days.</p></div><div class="tile"><p class="k">Hard warnings</p><div class="v good">0</div><p class="s">warn-level runs ≥9 min → hard-WARNING notifications.</p></div></div><div class="figure"><h2>1 days, one timeline</h2><p class="cap">Nov 4 20:00 – Nov 5 18:00 UTC, hourly worst case. The firing strip shares the axis above — read straight down.</p><div class="chart-scroll"><svg id="chart" viewBox="0 0 900 312" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Timeline of Function-key value with alert-rule firing strips."></svg></div><div class="legend"><span><i class="swatch line" style="background:var(--blue)"></i> Function-key value</span><span><i class="swatch" style="background:var(--crit)"></i> Rule firing</span><span><i class="swatch" style="background:var(--rug-track-solid)"></i> Quiet (no alert)</span><span><i class="swatch" style="background:var(--signal)"></i> Labeled incident</span></div></div><p class="note">10-minute average of the slowest walk per minute (ms), fleet-wide. Shaded: the hs26 retry loop on the first canary (commit 1 only, before the cut).</p><div class="figure" style="margin-top:16px"><h2>Excursions outside labeled incidents</h2><p class="cap">Every warn-or-worse run, judged by the paging model (checks every 5 min, 1-min retries, 5 consecutive to go hard: &lt;5 min never, 5–8 phase-dependent, ≥9 always).</p><div class="chart-scroll"><table class="exc"><thead><tr><th>start (UTC)</th><th>length</th><th>peak</th><th>Nagios outcome</th></tr></thead><tbody><tr><td class="mono">Nov 4 22:20</td><td>7 min</td><td class="mono">18.2k</td><td>may hard-warn (phase-dependent)</td></tr></tbody></table></div></div><h3>The proposed rule</h3><div class="q new"><p class="q-head">Metric key</p><pre>{rolling_mean(unread_index_walk&gt;ms@max,600000)}  (interval_min 1) vs [0, 0, 5000, 10000]</pre></div><h3>Lands in <span class="mono">metrics.rb</span> as</h3><div class="reco"><div class="reco-head"><span class="fname">chef-repo/cookbooks/nagios/attributes/metrics.rb</span></div><pre><span class="tok-c"># Thresholds derived from a 1-day backtest; see the attached report.</span>
+<span class="tok-s">'{rolling_mean(unread_index_walk&gt;ms@max,600000)}'</span> <span class="tok-o">=&gt;</span> <span class="tok-p">{</span>
+  <span class="tok-s">'count'</span>     <span class="tok-o">=&gt;</span> <span class="tok-p">[</span><span class="tok-n">0</span><span class="tok-p">,</span> <span class="tok-n">0</span><span class="tok-p">,</span> <span class="tok-n">5000</span><span class="tok-p">,</span> <span class="tok-n">10000</span><span class="tok-p">]</span><span class="tok-p">,</span>  <span class="tok-c"># [lowcrit, lowwarn, highwarn, highcrit]</span>
+  <span class="tok-s">'interval_min'</span> <span class="tok-o">=&gt;</span> <span class="tok-n">1</span>
+<span class="tok-p">}</span><span class="tok-p">,</span></pre></div><p class="foot">Source: prod metrics API via <span class="mono">gcp1-prod-0055</span>, 60&#8202;s resolution. Rule modeled exactly as <span class="mono">check_metrics_threshold</span> evaluates it (sum of <span class="mono">point[subkey]||0</span>, strict thresholds). Hover the chart for any hour.</p></div><div class="tt" id="tt"></div>
+<script>
+var DATA = [[1793822400000,24494.8,0,0,0,0,1],[1793826000000,21742.1,0,0,0,0,1],[1793829600000,20836.5,0,0,0,0,1],[1793833200000,92.6,0,0,0,0,0],[1793836800000,2960.4,0,0,0,0,0],[1793840400000,216.6,0,0,0,0,0],[1793844000000,678,0,0,0,0,0],[1793847600000,145.5,0,0,0,0,0],[1793851200000,41.3,0,0,0,0,0],[1793854800000,25.8,0,0,0,0,0],[1793858400000,22.89,0,0,0,0,0],[1793862000000,81.88,0,0,0,0,0],[1793865600000,26.2,0,0,0,0,0],[1793869200000,26.6,0,0,0,0,0],[1793872800000,22.7,0,0,0,0,0],[1793876400000,30.6,0,0,0,0,0],[1793880000000,304.4,0,0,0,0,0],[1793883600000,44.5,0,0,0,0,0],[1793887200000,115.7,0,0,0,0,0],[1793890800000,116.3,0,0,0,0,0],[1793894400000,325.4,0,0,0,0,0],[1793898000000,242.3,0,0,0,0,0],[1793901600000,616,0,0,0,0,0]];
+var CONFIG = {"isRatio":false,"yMax":50000,"T":[0,0,5000,10000],"statLabel":"Function-key value","volumeLabel":"Volume / hr","hasVolume":false,"hasOld":false,"P1":{"y":24,"h":176},"P2":null,"RUGS":[{"y":246,"h":22,"idx":6}],"axisY":294,"H":312,"rugLabels":["Proposed rule fires"],"rugCounts":["3 hrs"],"sig":[[0,2,"hs26 retry loop: user 1's 5,497-page mark-as-read walks, 11-04 3:15-5:20 PM EST"]],"guides":[[5000,"warn 5000"],[10000,"crit 10k"]]};
+// Inline chart renderer for render-report.js output. Consumes the embedded
+// DATA (hourly rows [t, stat, vol, fail, succ, oldFire, newFire]) and CONFIG
+// (panel geometry, thresholds, labels, signal ranges) — all precomputed.
+(function () {
+  var NS = 'http://www.w3.org/2000/svg'
+  var svg = document.getElementById('chart')
+  var tt = document.getElementById('tt')
+  var W = 900, padL = 52, padR = 16
+  var plotL = padL, plotR = W - padR, plotW = plotR - plotL
+  var n = DATA.length, barW = plotW / n
+  var C = CONFIG
+  var P1 = C.P1, P2 = C.P2, RUGS = C.RUGS
+  var lastRug = RUGS[RUGS.length - 1]
+  var bandBottom = lastRug.y + lastRug.h
+
+  function el(t, a) { var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); return e }
+  function add(e) { svg.appendChild(e); return e }
+  function txt(x, y, s, cls, anc) {
+    var e = el('text', { x: x, y: y, 'text-anchor': anc || 'start' })
+    e.setAttribute('class', cls || ''); e.textContent = s; return add(e)
+  }
+  function cx(i) { return plotL + (i + 0.5) * barW }
+  function fmt(v) {
+    if (C.isRatio) return (v * 100).toFixed(v > 0 && v < 0.1 ? 1 : 0) + '%'
+    if (v >= 10000) return (Math.round(v / 100) / 10) + 'k'
+    return String(Math.round(v * 100) / 100)
+  }
+
+  // ---- signal bands (behind everything) ----
+  C.sig.forEach(function (r) {
+    var x = plotL + r[0] * barW
+    var w = Math.max(2, (r[1] - r[0] + 1) * barW)
+    add(el('rect', { x: x, y: P1.y, width: w, height: bandBottom - P1.y, fill: 'var(--signal)' }))
+  })
+
+  // ---- panel labels ----
+  txt(plotL, P1.y - 9, C.statLabel, 'plab')
+  if (P2) txt(plotL, P2.y - 8, C.volumeLabel, 'plab')
+  RUGS.forEach(function (P, k) {
+    txt(plotL, P.y - 7, C.rugLabels[k], 'plab')
+    txt(plotR, P.y - 7, C.rugCounts[k], 'pcount', 'end')
+  })
+
+  // ---- stat panel ----
+  var yMax = C.yMax
+  function y1(v) { return P1.y + P1.h - (v / yMax) * P1.h }
+  for (var g = 0; g <= 4; g++) {
+    var gv = yMax * g / 4
+    add(el('line', { x1: plotL, x2: plotR, y1: y1(gv), y2: y1(gv), stroke: 'var(--grid)', 'stroke-width': 1 }))
+    txt(plotL - 8, y1(gv) + 4, fmt(gv), 'axlab', 'end')
+  }
+  C.guides.forEach(function (gg) {
+    if (gg[0] > yMax) return
+    add(el('line', { x1: plotL, x2: plotR, y1: y1(gg[0]), y2: y1(gg[0]), stroke: 'var(--crit)', 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0.6 }))
+    txt(plotR - 2, y1(gg[0]) - 4, gg[1], 'guide', 'end')
+  })
+  var pts = []
+  DATA.forEach(function (r, i) { pts.push(cx(i) + ',' + y1(Math.min(r[1], yMax))) })
+  add(el('path', { d: 'M' + plotL + ',' + y1(0) + ' L' + pts.join(' L') + ' L' + plotR + ',' + y1(0) + ' Z', fill: 'var(--blue-soft)' }))
+  add(el('path', { d: 'M' + pts.join(' L'), fill: 'none', stroke: 'var(--blue)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }))
+
+  // ---- volume panel ----
+  var maxVol = 1
+  if (P2) {
+    DATA.forEach(function (r) { if (r[2] > maxVol) maxVol = r[2] })
+    var y2 = function (v) { return P2.y + P2.h - (v / maxVol) * P2.h }
+    add(el('line', { x1: plotL, x2: plotR, y1: y2(0), y2: y2(0), stroke: 'var(--baseline)', 'stroke-width': 1 }))
+    txt(plotL - 8, y2(maxVol) + 9, (maxVol >= 1000 ? (Math.round(maxVol / 100) / 10) + 'k' : maxVol), 'axlab', 'end')
+    txt(plotL - 8, y2(0) + 3, '0', 'axlab', 'end')
+    var vpts = []
+    DATA.forEach(function (r, i) { vpts.push(cx(i) + ',' + y2(r[2])) })
+    add(el('path', { d: 'M' + plotL + ',' + y2(0) + ' L' + vpts.join(' L') + ' L' + plotR + ',' + y2(0) + ' Z', fill: 'var(--vol-soft)' }))
+    add(el('path', { d: 'M' + vpts.join(' L'), fill: 'none', stroke: 'var(--vol)', 'stroke-width': 1.25, 'stroke-linejoin': 'round' }))
+  }
+
+  // ---- firing strips ----
+  RUGS.forEach(function (P) {
+    add(el('rect', { x: plotL, y: P.y, width: plotW, height: P.h, rx: 4, fill: 'var(--rug-track)' }))
+    var runs = [], start = -1
+    for (var i = 0; i < n; i++) {
+      var on = DATA[i][P.idx] === 1
+      if (on && start < 0) start = i
+      if ((!on || i === n - 1) && start >= 0) {
+        runs.push([start, on ? i : i - 1]); start = -1
+      }
+    }
+    runs.forEach(function (rn) {
+      var x = plotL + rn[0] * barW
+      var w = Math.max(2, (rn[1] - rn[0] + 1) * barW)
+      add(el('rect', { x: x, y: P.y, width: w, height: P.h, rx: 2, fill: 'var(--crit)' }))
+    })
+  })
+
+  // ---- x axis ----
+  var DAY = 86400000, t0 = DATA[0][0], tEnd = DATA[n - 1][0]
+  var days = Math.max(1, Math.round((tEnd - t0) / DAY))
+  var step = Math.max(1, Math.round(days / 5))
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  var firstMid = Math.ceil(t0 / DAY) * DAY
+  for (var t = firstMid; t <= tEnd; t += step * DAY) {
+    var i = Math.round((t - t0) / 3600000)
+    if (i < 0) i = 0; if (i > n - 1) i = n - 1
+    var xx = cx(i)
+    add(el('line', { x1: xx, x2: xx, y1: P1.y, y2: bandBottom, stroke: 'var(--grid)', 'stroke-width': 1, opacity: 0.5 }))
+    var dt = new Date(t)
+    txt(xx, C.axisY, MON[dt.getUTCMonth()] + ' ' + dt.getUTCDate(), 'axlab', 'middle')
+  }
+
+  // ---- hover ----
+  function inSig(i) {
+    for (var k = 0; k < C.sig.length; k++)
+      if (i >= C.sig[k][0] && i <= C.sig[k][1]) return C.sig[k][2]
+    return null
+  }
+  var cross = add(el('line', { x1: 0, x2: 0, y1: P1.y, y2: bandBottom, stroke: 'var(--ink)', 'stroke-width': 1, opacity: 0, 'pointer-events': 'none' }))
+  var dot = add(el('circle', { r: 3.5, fill: 'var(--blue)', stroke: 'var(--surface)', 'stroke-width': 1.5, opacity: 0, 'pointer-events': 'none' }))
+  var over = add(el('rect', { x: plotL, y: P1.y, width: plotW, height: bandBottom - P1.y, fill: 'transparent' }))
+  function fmtT(t) {
+    var dt = new Date(t)
+    function p(x) { return (x < 10 ? '0' : '') + x }
+    return MON[dt.getUTCMonth()] + ' ' + dt.getUTCDate() + ' ' + p(dt.getUTCHours()) + ':00 UTC'
+  }
+  function move(ev) {
+    var rect = svg.getBoundingClientRect()
+    var sx = (ev.clientX - rect.left) * (W / rect.width)
+    var i = Math.round((sx - plotL) / barW - 0.5)
+    if (i < 0) i = 0; if (i > n - 1) i = n - 1
+    var r = DATA[i]
+    var xx = cx(i)
+    cross.setAttribute('x1', xx); cross.setAttribute('x2', xx); cross.setAttribute('opacity', 0.35)
+    dot.setAttribute('cx', xx); dot.setAttribute('cy', y1(Math.min(r[1], yMax))); dot.setAttribute('opacity', 1)
+    var h = '<div class="d">' + fmtT(r[0]) + '</div>' +
+      '<div class="r"><span>' + C.statLabel + '</span><b>' + fmt(r[1]) + '</b></div>'
+    if (P2) h += '<div class="r"><span>Volume</span><b>' + r[2] + '</b></div>' +
+      '<div class="r"><span>fail / success</span><b>' + r[3] + ' / ' + r[4] + '</b></div>'
+    if (C.hasOld) h += '<div class="r"><span>Current rule</span>' +
+      (r[5] ? '<span class="fire">FIRING</span>' : '<span class="ok">quiet</span>') + '</div>'
+    h += '<div class="r"><span>Proposed rule</span>' +
+      (r[6] ? '<span class="fire">FIRING</span>' : '<span class="ok">quiet</span>') + '</div>'
+    var sig = inSig(i)
+    if (sig) h += '<div class="r"><span>window</span><span class="sig">' + sig + '</span></div>'
+    tt.innerHTML = h
+    tt.style.opacity = 1
+    var tx = ev.clientX + 14, ty = ev.clientY + 14
+    if (tx + 200 > window.innerWidth) tx = ev.clientX - 200
+    if (ty + 160 > window.innerHeight) ty = ev.clientY - 160
+    tt.style.left = tx + 'px'; tt.style.top = ty + 'px'
+  }
+  function leave() { tt.style.opacity = 0; cross.setAttribute('opacity', 0); dot.setAttribute('opacity', 0) }
+  over.addEventListener('mousemove', move)
+  over.addEventListener('mouseleave', leave)
+  svg.addEventListener('touchmove', function (e) {
+    if (e.touches[0]) { move(e.touches[0]); e.preventDefault() }
+  }, { passive: false })
+})()
+
+</script>
+</body>
+</html>
